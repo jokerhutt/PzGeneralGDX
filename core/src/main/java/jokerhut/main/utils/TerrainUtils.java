@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.Hex;
 
 public class TerrainUtils {
 
@@ -35,19 +35,24 @@ return terrain;
 
     }
 
-public static HashMap<Axial, Integer> generateAxialTiles (TiledMap map) {
+public static HashMap<Axial, Hex> generateAxialMap (int[][] offsetGrid) {
 
-    HashMap<Axial, Integer> axialTiles = new HashMap<>();
+    HashMap<Axial, Hex> axialMap = new HashMap<>();
 
-    TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
-    for (int y = 0; y < layer.getHeight(); y++) {
-        for (int x = 0; x < layer.getWidth(); x++) {
-            Cell cell = layer.getCell(x, y);
-            if (cell == null) continue;
-            axialTiles.put(HexUtils.toAxialOddQ(x, y), cell.getTile().getId());
+    for (int col = 0; col < offsetGrid.length; col++) {
+        for (int row = 0; row < offsetGrid[col].length; row++) {
+
+            int tileId = offsetGrid[col][row];
+            if (tileId == -1) continue;
+
+            Axial axialCoordinates = HexUtils.offsetToAxial(col, row);
+            axialMap.put(axialCoordinates, new Hex(axialCoordinates.q(), axialCoordinates.r()));
+
         }
     }
-    return axialTiles;
+
+    return axialMap;
+
 
 }
 

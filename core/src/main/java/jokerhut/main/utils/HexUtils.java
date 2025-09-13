@@ -1,46 +1,40 @@
 package jokerhut.main.utils;
 
 import com.badlogic.gdx.math.Vector2;
-
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.Hex;
+import jokerhut.main.constants.GameConstants;
 
 public class HexUtils {
 
+    public static Vector2 axialToPixelCenter(Hex hex) {
 
 
-    //----- CONVERTING FROM 2D TO AXIAL -----//
-    public static int isOdd(int number) {
-        if (number % 2 == 0) {
-            return 0;
-        } else {
-            return 1;
-        }
+        float x = (3f / 2f) * hex.q();
+        float y = (float) (Math.sqrt(3) / 2 * hex.q() + Math.sqrt(3) * hex.r());
+
+        x = x * GameConstants.HEX_SIZE + GameConstants.HEX_SIZE;
+        y = y * GameConstants.HEX_SIZE * GameConstants.HEX_Y_SCALE;
+
+        return new Vector2(x, y);
+
     }
 
-    public static Axial toAxialOddR(int row, int col) {
-        int q = col - (row - isOdd(row)) / 2;
-        int r = row;
-        return new Axial(q, r);
+    public static float pixelToNearestAxial() {
+
+        return 1f;
+
     }
 
-    public static Axial toAxialOddQ(int row, int col) {
+    public static Axial offsetToAxial(int col, int row) {
+
+        int parity = col & 1;
+
         int q = col;
-        int r = row - ((col - isOdd(col)) / 2);
+        int r = row - (col - parity) / 2;
+
         return new Axial(q, r);
+
     }
-
-
-
-   public static Vector2 axialToPixelFlatTop(Axial axial, float width, float height) {
-       float size = width * 0.5f;
-       float centerX = width * 0.5f;
-       float centerY = height * 0.5f;
-
-       float x = centerX + (1.5f * size) * axial.q();
-       float y = centerY + (float)(Math.sqrt(3) * size) * (axial.r() + axial.q() * 0.5f);
-
-       return new Vector2(x, y);
-
-   }
 
 }
