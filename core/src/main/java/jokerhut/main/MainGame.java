@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.IntMap;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
+import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.TerrainProps;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.entities.AbstractUnit;
@@ -26,6 +27,7 @@ import jokerhut.main.enums.HexDebugType;
 import jokerhut.main.input.InputProcessor;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.selection.SelectionBroadcaster;
+import jokerhut.main.selection.SelectionState;
 import jokerhut.main.utils.HexDebugUtils;
 import jokerhut.main.utils.HexUtils;
 import jokerhut.main.utils.TerrainUtils;
@@ -49,6 +51,7 @@ public class MainGame extends ApplicationAdapter {
     private BattleField battleField;
     private final SelectionBroadcaster broadcaster = new SelectionBroadcaster();
     private InputProcessor inputProcessor;
+    private SelectionState selectionState;
 
     @Override
     public void create() {
@@ -68,6 +71,8 @@ public class MainGame extends ApplicationAdapter {
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
+        selectionState = new SelectionState();
+        broadcaster.subscribe(selectionState);
 
         inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster);
         Gdx.input.setInputProcessor(inputProcessor);
@@ -86,19 +91,34 @@ public class MainGame extends ApplicationAdapter {
         hexmapRenderer.render();
 
         shapeRenderer.setProjectionMatrix(camera.combined);
+
+        Selection currentSelection = selectionState.getCurrentSelection();
+        if (currentSelection != null) {
+
+            shapeRenderer.setColor(Color.BLUE);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+            Hex axialPosition = currentSelection.hex();
+            Vector2 currentPosition = HexUtils.axialToPixelCenter(axialPosition);
+            HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
+
+            shapeRenderer.end();
+
+        }
+
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         for (Hex hex : hexMap.values()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(hex);
             HexUtils.drawHexOutline(shapeRenderer, pixelCoordinates, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
+
         }
 
         shapeRenderer.end();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-
 
         for (AbstractUnit unit : battleField.getUnitList()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());

@@ -105,4 +105,22 @@ public static Axial roundToAxial(float qf, float rf) {
         shapeRenderer.line(prevX, prevY, firstX, firstY);
     }
 
+public static void fillHex(ShapeRenderer sr, Vector2 c, float radius, float yScale) {
+    float cx = c.x, cy = c.y;
+
+    // precompute corners
+    float[] x = new float[6], y = new float[6];
+    for (int i = 0; i < 6; i++) {
+        double a = Math.toRadians(60 * i);
+        x[i] = cx + (float)(radius * Math.cos(a));
+        y[i] = cy + (float)(yScale * radius * Math.sin(a));
+    }
+
+    // fan: center -> corner i -> corner i+1
+    for (int i = 0; i < 6; i++) {
+        int j = (i + 1) % 6;
+        sr.triangle(cx, cy, x[i], y[i], x[j], y[j]);
+    }
+}
+
 }
