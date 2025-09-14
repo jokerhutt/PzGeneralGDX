@@ -17,10 +17,9 @@ public class BattleField {
     private final HashMap<Axial, AbstractUnit> occupiedHexes = new HashMap<>();
     private final ArrayList<AbstractUnit> unitList = new ArrayList<>();
 
-    public BattleField (MainGame gameContext) {
+    public BattleField(MainGame gameContext) {
 
         addMockUnits();
-
 
     }
 
@@ -28,7 +27,8 @@ public class BattleField {
 
         Axial oldPosition = unit.getPosition();
 
-        if(occupiedHexes.containsKey(newPosition)) throw new IllegalStateException("Can not move");
+        if (occupiedHexes.containsKey(newPosition))
+            throw new IllegalStateException("Can not move");
 
         occupiedHexes.remove(oldPosition);
         unit.setPosition(newPosition);
@@ -36,19 +36,21 @@ public class BattleField {
 
     }
 
+    private void addMockUnits() {
 
-    private void addMockUnits () {
+        InfantryUnit unitOne = new InfantryUnit(new Axial(20, 10),
+                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
+        InfantryUnit unitTwo = new InfantryUnit(new Axial(23, 8),
+                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
 
-        InfantryUnit unitOne = new InfantryUnit(new Axial(2, 14), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-        InfantryUnit unitTwo = new InfantryUnit(new Axial(1, 13), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-
-        spawn(unitOne, new Axial(2, 14));
-        spawn(unitTwo, new Axial(1, 13));
+        spawn(unitOne, new Axial(20, 10));
+        spawn(unitTwo, new Axial(23, 8));
     }
 
-    private void spawn (AbstractUnit unit, Axial position) {
+    private void spawn(AbstractUnit unit, Axial position) {
 
-        if (occupiedHexes.containsKey(position)) throw new IllegalStateException("TAKEN HEX");
+        if (occupiedHexes.containsKey(position))
+            throw new IllegalStateException("TAKEN HEX");
 
         unit.setPosition(position);
         unitList.add(unit);
@@ -68,16 +70,12 @@ public class BattleField {
         return occupiedHexes.get(axial);
     }
 
-
     public HashMap<Axial, AbstractUnit> getOccupiedHexes() {
         return occupiedHexes;
     }
 
-
     public ArrayList<AbstractUnit> getUnitList() {
         return unitList;
     }
-
-
 
 }

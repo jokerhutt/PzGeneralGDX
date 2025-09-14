@@ -64,7 +64,7 @@ public class MainGame extends ApplicationAdapter {
     public void create() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 6f;
+        camera.zoom = 4f;
         batch = new SpriteBatch();
         font = new BitmapFont();
         font.getData().setScale(2f);
@@ -96,7 +96,7 @@ public class MainGame extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.position.set(16 * GameConstants.HEX_SIZE, 16 * GameConstants.HEX_SIZE, 0);
+        camera.position.set(32 * GameConstants.HEX_SIZE, 32 * GameConstants.HEX_SIZE, 0);
 
         camera.update();
         hexmapRenderer.setView(camera);
@@ -110,15 +110,19 @@ public class MainGame extends ApplicationAdapter {
             shapeRenderer.setColor(Color.BLUE);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            Hex axialPosition = currentSelection.hex();
-            Vector2 currentPosition = HexUtils.axialToPixelCenter(axialPosition);
+            Hex currentlySelectedHex = currentSelection.hex();
+            Vector2 currentPosition = HexUtils.axialToPixelCenter(currentlySelectedHex);
             HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
 
             shapeRenderer.end();
 
+            String terrain = currentlySelectedHex.getTerrain();
+            String axial = "(" + currentlySelectedHex.getQ() + ", " + currentlySelectedHex.getR() + ")";
+            sidebarStage.updateInfo(terrain, axial);
+
         }
 
-        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         for (Hex hex : hexMap.values()) {
@@ -128,9 +132,6 @@ public class MainGame extends ApplicationAdapter {
         }
 
         shapeRenderer.end();
-
-        sidebarStage.act(Gdx.graphics.getDeltaTime());
-        sidebarStage.draw();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -144,6 +145,9 @@ public class MainGame extends ApplicationAdapter {
         HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 
         batch.end();
+
+        sidebarStage.act(Gdx.graphics.getDeltaTime());
+        sidebarStage.draw();
 
     }
 
