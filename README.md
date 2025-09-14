@@ -7,7 +7,7 @@ This is a personal project to make a PanzerCorps 1 style game in LibGDX.
 ### Map setup
 
 The hex map comes as a TMX and is flat top with an odd stagger index
-The map is then parsed into a Hashmap<Axial, Hex> with axial coordinates.
+The map is then parsed into a `Hashmap<Axial, Hex>` with axial coordinates.
 
 ### Rendering
 
