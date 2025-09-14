@@ -12,6 +12,7 @@ public class UnitInfoTable extends Table {
 
     private final Texture bgTex;
     private UnitInfoGroup unitInfoGroup;
+    private UnitStatsGroup unitStatsGroup;
 
     public UnitInfoTable() {
 
@@ -21,11 +22,15 @@ public class UnitInfoTable extends Table {
         unitInfoGroup = new UnitInfoGroup();
         this.add(unitInfoGroup).expand().top().pad(10).row();
 
+        unitStatsGroup = new UnitStatsGroup();
+        this.add(unitStatsGroup).expand().top().pad(10).row();
+
     }
 
     public void update(AbstractUnit unit) {
 
         unitInfoGroup.updateInfo(unit);
+        unitStatsGroup.updateInfo(unit);
 
     }
 
