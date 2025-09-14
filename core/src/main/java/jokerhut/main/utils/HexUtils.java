@@ -36,11 +36,32 @@ public class HexUtils {
 
     }
 
-    public static float pixelToNearestAxial() {
+    public static Axial pixelToNearestAxial(float px, float py, float size) {
 
-        return 1f;
+    float X = (px - size) / size;
+    float Y =  py / (size * GameConstants.HEX_Y_SCALE);
+
+    float qf = (2f/3f) * X;
+    float rf = (-1f/3f) * X + (float)(1.0 / Math.sqrt(3.0)) * Y;
+    return roundToAxial(qf, rf);
 
     }
+
+public static Axial roundToAxial(float qf, float rf) {
+    float sf = -qf - rf;
+    int q = Math.round(qf);
+    int r = Math.round(rf);
+    int s = Math.round(sf);
+
+    float dq = Math.abs(q - qf);
+    float dr = Math.abs(r - rf);
+    float ds = Math.abs(s - sf);
+
+    if (dq > dr && dq > ds)       q = -r - s;
+    else if (dr > ds)             r = -q - s;
+
+    return new Axial(q, r);
+}
 
     public static Axial offsetToAxial(int col, int row) {
 

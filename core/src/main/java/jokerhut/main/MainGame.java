@@ -22,7 +22,10 @@ import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.TerrainProps;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.entities.AbstractUnit;
+import jokerhut.main.enums.HexDebugType;
+import jokerhut.main.input.InputProcessor;
 import jokerhut.main.screen.BattleField;
+import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.utils.HexDebugUtils;
 import jokerhut.main.utils.HexUtils;
 import jokerhut.main.utils.TerrainUtils;
@@ -31,18 +34,21 @@ import jokerhut.main.utils.TerrainUtils;
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
 public class MainGame extends ApplicationAdapter {
+
+    // ----- LIBGDX OBJECTS ----- //
     private SpriteBatch batch;
     private Texture image;
-
     private OrthographicCamera camera;
     private TiledMap map;
     private HexagonalTiledMapRenderer hexmapRenderer;
     private ShapeRenderer shapeRenderer;
     private BitmapFont font;
-
     private HashMap<Axial, Hex> hexMap;
 
+    // ----- GAME LOGIC ----- //
     private BattleField battleField;
+    private final SelectionBroadcaster broadcaster = new SelectionBroadcaster();
+    private InputProcessor inputProcessor;
 
     @Override
     public void create() {
@@ -63,10 +69,10 @@ public class MainGame extends ApplicationAdapter {
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
 
+        inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster);
+        Gdx.input.setInputProcessor(inputProcessor);
+
     }
-
-
-
 
     @Override
     public void render() {
@@ -99,7 +105,7 @@ public class MainGame extends ApplicationAdapter {
             batch.draw(unit.getSprite(), pixelCoordinates.x + GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y, GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
         }
 
-        HexDebugUtils.renderHexInfo(null, hexMap, batch, font);
+        HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 
 
         batch.end();

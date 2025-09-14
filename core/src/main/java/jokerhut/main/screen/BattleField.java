@@ -64,6 +64,10 @@ public class BattleField {
         }
     }
 
+    public AbstractUnit unitAt(Axial axial) {
+        return occupiedHexes.get(axial);
+    }
+
 
     public HashMap<Axial, AbstractUnit> getOccupiedHexes() {
         return occupiedHexes;
