@@ -100,15 +100,9 @@ public class MainGame extends ApplicationAdapter {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        for (int col = 0; col < cols; col++) {
-            for (int row = 0; row < rows; row++) {
-                float cx = originX + 1.5f * size * col;
-                float cy = originY + (root3 * size * ky) * (row + 0.5f * (col & 1));
-
-                int q = col;
-                int r = row - ((col - (col & 1)) / 2);
-                font.draw(batch, q + "," + r, cx - 8f, cy + 4f);
-            }
+        for (Hex hex : hexMap.values()) {
+                Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(hex);
+                font.draw(batch, hex.q() + "," + hex.r(), pixelCoordinates.x - 8f, pixelCoordinates.y + 4f);
         }
         batch.end();
 
