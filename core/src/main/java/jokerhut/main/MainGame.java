@@ -43,11 +43,11 @@ public class MainGame extends ApplicationAdapter {
     public void create() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 2f;
+        camera.zoom = 6f;
         batch = new SpriteBatch();
         font = new BitmapFont();
         font.getData().setScale(0.5f); // optional: smaller Texture
-        map = new TmxMapLoader().load("map/pzcorpsdesert.tmx");
+        map = new TmxMapLoader().load("map/pzcmap.tmx");
         hexmapRenderer = new HexagonalTiledMapRenderer(map, 1f);
         shapeRenderer = new ShapeRenderer();
 
