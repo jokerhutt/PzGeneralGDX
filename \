@@ -40,7 +40,7 @@ return terrain;
 
     }
 
-public static HashMap<Axial, Hex> generateAxialMap (int[][] offsetGrid, IntMap<TerrainProps> tileProps) {
+public static HashMap<Axial, Hex> generateAxialMap (int[][] offsetGrid) {
 
     HashMap<Axial, Hex> axialMap = new HashMap<>();
 
@@ -51,8 +51,7 @@ public static HashMap<Axial, Hex> generateAxialMap (int[][] offsetGrid, IntMap<T
             if (tileId == -1) continue;
 
             Axial axialCoordinates = HexUtils.offsetToAxial(col, row);
-            TerrainProps terrainProps = tileProps.get(tileId);
-            axialMap.put(axialCoordinates, new Hex(axialCoordinates.q(), axialCoordinates.r(), terrainProps.terrain(), terrainProps.defense(), terrainProps.moveCost()));
+            axialMap.put(axialCoordinates, new Hex(axialCoordinates.q(), axialCoordinates.r()));
 
         }
     }
@@ -62,20 +61,25 @@ public static HashMap<Axial, Hex> generateAxialMap (int[][] offsetGrid, IntMap<T
 
 }
 
-public static IntMap<TerrainProps> buildTileProps(TiledMap map) {
+public static IntMap<TerrainProp> buildTileProps(TiledMap map) {
     IntMap<TerrainProps> out = new IntMap<>();
-    for (TiledMapTileSet tileSet : map.getTileSets()) {
-        for (TiledMapTile mapTile : tileSet) {
-            MapProperties props = mapTile.getProperties();
-            String terr = props.get("terrain", (String) null, String.class);
-            if (terr == null) continue;
+    for (TiledMapTileSet ts : map.getTileSets()) {
+        for (TiledMapTile t : ts) {
+            MapProperties p = t.getProperties();
+            String terrStr = p.get("terrain", String.class);
+            if (terrStr == null) continue;
 
-            int def  = props.get("defence", 0, Integer.class);
-            int move = props.get("moveCost", 1, Integer.class);
+            // tolerate "defence" vs "defense"
+            Integer def = p.containsKey("defense") ? p.get("defense", Integer.class)
+                                                  : p.get("defence", Integer.class, 0);
+            int move = p.get("moveCost", Integer.class, 1);
+            boolean pass = p.get("passable", Boolean.class, move < 99); // optional property
 
-            System.out.println("TERRAIN: " + terr + " DEFENCE: " + def + " MOVECOST: " + move);
+            // fix common typo
+            if ("FORREST".equalsIgnoreCase(terrStr)) terrStr = "FOREST";
 
-            out.put(mapTile.getId(), new TerrainProps(terr, def, move));
+            Terrain terr = Terrain.valueOf(terrStr.toUpperCase());
+            out.put(t.getId(), new TerrainProps(terr, def, move, pass));
         }
     }
     return out;
