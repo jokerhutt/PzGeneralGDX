@@ -8,16 +8,22 @@ import com.badlogic.gdx.math.Vector2;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
+import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.HexDebugType;
 
 public class HexDebugUtils {
 
     public static void renderHexInfo (HexDebugType debugType, HashMap<Axial, Hex> hexMap, SpriteBatch batch, BitmapFont font) {
 
+        if (debugType == null) {
+            System.out.println("No debug delected for hex info renderer");
+            return;
+        }
+
         for (Hex hex : hexMap.values()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(hex);
             String label = getLabelByRenderType(hex, debugType);
-            font.draw(batch, label == null ? "" : label, pixelCoordinates.x - 32f, pixelCoordinates.y + 8f);
+            font.draw(batch, label == null ? "" : label, pixelCoordinates.x - GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y + 8f);
         }
 
     }

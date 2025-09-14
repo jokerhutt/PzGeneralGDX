@@ -22,6 +22,20 @@ public class HexUtils {
 
     }
 
+
+    public static Vector2 axialToPixelCenter(Axial axial) {
+
+
+        float x = (3f / 2f) * axial.q();
+        float y = (float) (Math.sqrt(3) / 2 * axial.q() + Math.sqrt(3) * axial.r());
+
+        x = x * GameConstants.HEX_SIZE + GameConstants.HEX_SIZE;
+        y = y * GameConstants.HEX_SIZE * GameConstants.HEX_Y_SCALE;
+
+        return new Vector2(x, y);
+
+    }
+
     public static float pixelToNearestAxial() {
 
         return 1f;
