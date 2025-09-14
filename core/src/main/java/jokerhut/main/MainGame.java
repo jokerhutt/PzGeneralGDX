@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
@@ -28,12 +30,14 @@ import jokerhut.main.input.InputProcessor;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
+import jokerhut.main.stage.SidebarStage;
 import jokerhut.main.utils.HexDebugUtils;
 import jokerhut.main.utils.HexUtils;
 import jokerhut.main.utils.TerrainUtils;
 
 /**
- * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
+ * platforms.
  */
 public class MainGame extends ApplicationAdapter {
 
@@ -53,6 +57,9 @@ public class MainGame extends ApplicationAdapter {
     private InputProcessor inputProcessor;
     private SelectionState selectionState;
 
+    // ----- HUD STUFF ----- //
+    private SidebarStage sidebarStage;
+
     @Override
     public void create() {
         camera = new OrthographicCamera();
@@ -66,7 +73,6 @@ public class MainGame extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         battleField = new BattleField(this);
 
-
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
@@ -74,8 +80,14 @@ public class MainGame extends ApplicationAdapter {
         selectionState = new SelectionState();
         broadcaster.subscribe(selectionState);
 
+        sidebarStage = new SidebarStage(new ScreenViewport(), batch);
         inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster);
-        Gdx.input.setInputProcessor(inputProcessor);
+
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(sidebarStage);
+        inputMultiplexer.addProcessor(inputProcessor);
+
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
     }
 
@@ -117,23 +129,23 @@ public class MainGame extends ApplicationAdapter {
 
         shapeRenderer.end();
 
+        sidebarStage.act(Gdx.graphics.getDeltaTime());
+        sidebarStage.draw();
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
         for (AbstractUnit unit : battleField.getUnitList()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
-            batch.draw(unit.getSprite(), pixelCoordinates.x + GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y, GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+            batch.draw(unit.getSprite(), pixelCoordinates.x + GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y,
+                    GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
         }
 
         HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 
-
         batch.end();
 
     }
-
-
-
 
     @Override
     public void dispose() {
@@ -142,8 +154,3 @@ public class MainGame extends ApplicationAdapter {
         shapeRenderer.dispose();
     }
 }
-
-
-
-
-
