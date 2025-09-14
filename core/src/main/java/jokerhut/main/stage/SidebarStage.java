@@ -9,19 +9,19 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.Selection;
+import jokerhut.main.stage.widgets.HexInfoGroup;
 
 public class SidebarStage extends Stage {
 
     private final Table sidebar;
     private final Texture bgTex;
-    private final Skin skin;
-    private final Label terrainLabel;
-    private final Label axialLabel;
+    private HexInfoGroup hexInfoGroup;
 
     public SidebarStage(Viewport viewport, SpriteBatch batch) {
         super(viewport, batch);
@@ -44,12 +44,8 @@ public class SidebarStage extends Stage {
             }
         });
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
-        terrainLabel = new Label("Terrain: ", skin);
-        axialLabel = new Label("", skin);
-
-        sidebar.add(terrainLabel).left().pad(5).row();
-        sidebar.add(axialLabel).left().pad(5).row();
+        hexInfoGroup = new HexInfoGroup();
+        sidebar.add(hexInfoGroup).expand().top().pad(10).row();
 
         Texture scrollPage = new Texture(Gdx.files.internal("ui/verticalNote.png"));
         Image scrollPageImage = new Image(scrollPage);
@@ -59,9 +55,13 @@ public class SidebarStage extends Stage {
 
     }
 
-    public void updateInfo(String terrain, String axial) {
-        terrainLabel.setText("Terrain: " + terrain);
-        axialLabel.setText("Axial: " + axial);
+    public void updateState(Selection selection) {
+
+        String terrain = selection.hex().getTerrain();
+        Axial axial = selection.axial();
+
+        hexInfoGroup.updateInfo(terrain, axial);
+
     }
 
     public Table getSideBar() {

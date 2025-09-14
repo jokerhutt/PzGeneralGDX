@@ -116,9 +116,7 @@ public class MainGame extends ApplicationAdapter {
 
             shapeRenderer.end();
 
-            String terrain = currentlySelectedHex.getTerrain();
-            String axial = "(" + currentlySelectedHex.getQ() + ", " + currentlySelectedHex.getR() + ")";
-            sidebarStage.updateInfo(terrain, axial);
+            sidebarStage.updateState(currentSelection);
 
         }
 
