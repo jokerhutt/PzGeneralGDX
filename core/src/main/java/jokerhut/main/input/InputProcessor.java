@@ -37,12 +37,11 @@ public class InputProcessor extends InputAdapter {
     public boolean touchDown(int x, int y, int pointer, int button) {
         if (button != com.badlogic.gdx.Input.Buttons.LEFT) return false;
 
-        Vector3 w = camera.unproject(new Vector3(x, y, 0));
-        Axial a = HexUtils.pixelToNearestAxial(w.x, w.y, GameConstants.HEX_SIZE);
-        Hex h = hexes.get(a);
-        AbstractUnit u = battlefield.unitAt(a);
-        System.out.println(a.q() + ", " + a.r());
-        broadcaster.broadcastEvent(new Selection(a, h, u));
+        Vector3 selectedPixels = camera.unproject(new Vector3(x, y, 0));
+        Axial axialCoordinates = HexUtils.pixelToNearestAxial(selectedPixels.x, selectedPixels.y, GameConstants.HEX_SIZE);
+        Hex hexInstance = hexes.get(axialCoordinates);
+        AbstractUnit unitInstance = battlefield.unitAt(axialCoordinates);
+        broadcaster.broadcastEvent(new Selection(axialCoordinates, hexInstance, unitInstance));
         return true;
     }
 

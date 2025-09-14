@@ -11,7 +11,6 @@ public class HexUtils {
 
     public static Vector2 axialToPixelCenter(Hex hex) {
 
-
         float x = (3f / 2f) * hex.getQ();
         float y = (float) (Math.sqrt(3) / 2 * hex.getQ() + Math.sqrt(3) * hex.getR());
 
@@ -22,9 +21,7 @@ public class HexUtils {
 
     }
 
-
     public static Vector2 axialToPixelCenter(Axial axial) {
-
 
         float x = (3f / 2f) * axial.q();
         float y = (float) (Math.sqrt(3) / 2 * axial.q() + Math.sqrt(3) * axial.r());
@@ -38,30 +35,32 @@ public class HexUtils {
 
     public static Axial pixelToNearestAxial(float px, float py, float size) {
 
-    float X = (px - size) / size;
-    float Y =  py / (size * GameConstants.HEX_Y_SCALE);
+        float X = (px - size) / size;
+        float Y = py / (size * GameConstants.HEX_Y_SCALE);
 
-    float qf = (2f/3f) * X;
-    float rf = (-1f/3f) * X + (float)(1.0 / Math.sqrt(3.0)) * Y;
-    return roundToAxial(qf, rf);
+        float qf = (2f / 3f) * X;
+        float rf = (-1f / 3f) * X + (float) (1.0 / Math.sqrt(3.0)) * Y;
+        return roundToAxial(qf, rf);
 
     }
 
-public static Axial roundToAxial(float qf, float rf) {
-    float sf = -qf - rf;
-    int q = Math.round(qf);
-    int r = Math.round(rf);
-    int s = Math.round(sf);
+    public static Axial roundToAxial(float qf, float rf) {
+        float sf = -qf - rf;
+        int q = Math.round(qf);
+        int r = Math.round(rf);
+        int s = Math.round(sf);
 
-    float dq = Math.abs(q - qf);
-    float dr = Math.abs(r - rf);
-    float ds = Math.abs(s - sf);
+        float dq = Math.abs(q - qf);
+        float dr = Math.abs(r - rf);
+        float ds = Math.abs(s - sf);
 
-    if (dq > dr && dq > ds)       q = -r - s;
-    else if (dr > ds)             r = -q - s;
+        if (dq > dr && dq > ds)
+            q = -r - s;
+        else if (dr > ds)
+            r = -q - s;
 
-    return new Axial(q, r);
-}
+        return new Axial(q, r);
+    }
 
     public static Axial offsetToAxial(int col, int row) {
 
@@ -74,9 +73,8 @@ public static Axial roundToAxial(float qf, float rf) {
 
     }
 
-
-    public static void drawHexOutline(ShapeRenderer shapeRenderer, Vector2 pixelCoordinates, float radius, float yScale) {
-
+    public static void drawHexOutline(ShapeRenderer shapeRenderer, Vector2 pixelCoordinates, float radius,
+            float yScale) {
 
         float centerX = pixelCoordinates.x;
         float centerY = pixelCoordinates.y;
@@ -105,22 +103,21 @@ public static Axial roundToAxial(float qf, float rf) {
         shapeRenderer.line(prevX, prevY, firstX, firstY);
     }
 
-public static void fillHex(ShapeRenderer sr, Vector2 c, float radius, float yScale) {
-    float cx = c.x, cy = c.y;
+    public static void fillHex(ShapeRenderer shapeRenderer, Vector2 pixelCoordinates, float radius, float yScale) {
+        float centerX = pixelCoordinates.x;
+        float centerY = pixelCoordinates.y;
 
-    // precompute corners
-    float[] x = new float[6], y = new float[6];
-    for (int i = 0; i < 6; i++) {
-        double a = Math.toRadians(60 * i);
-        x[i] = cx + (float)(radius * Math.cos(a));
-        y[i] = cy + (float)(yScale * radius * Math.sin(a));
-    }
+        float[] x = new float[6], y = new float[6];
+        for (int i = 0; i < 6; i++) {
+            double a = Math.toRadians(60 * i);
+            x[i] = centerX + (float) (radius * Math.cos(a));
+            y[i] = centerY + (float) (yScale * radius * Math.sin(a));
+        }
 
-    // fan: center -> corner i -> corner i+1
-    for (int i = 0; i < 6; i++) {
-        int j = (i + 1) % 6;
-        sr.triangle(cx, cy, x[i], y[i], x[j], y[j]);
+        for (int i = 0; i < 6; i++) {
+            int j = (i + 1) % 6;
+            shapeRenderer.triangle(centerX, centerY, x[i], y[i], x[j], y[j]);
+        }
     }
-}
 
 }
