@@ -16,7 +16,6 @@ public class HexDebugUtils {
     public static void renderHexInfo (HexDebugType debugType, HashMap<Axial, Hex> hexMap, SpriteBatch batch, BitmapFont font) {
 
         if (debugType == null) {
-            System.out.println("No debug delected for hex info renderer");
             return;
         }
 

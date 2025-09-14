@@ -1,0 +1,79 @@
+package jokerhut.main.screen;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import jokerhut.main.MainGame;
+import jokerhut.main.DTs.Axial;
+import jokerhut.main.entities.AbstractUnit;
+import jokerhut.main.entities.InfantryUnit;
+
+public class BattleField {
+
+    private final HashMap<Axial, AbstractUnit> occupiedHexes = new HashMap<>();
+    private final ArrayList<AbstractUnit> unitList = new ArrayList<>();
+
+    public BattleField (MainGame gameContext) {
+
+        addMockUnits();
+
+
+    }
+
+    public void moveUnit(AbstractUnit unit, Axial newPosition) {
+
+        Axial oldPosition = unit.getPosition();
+
+        if(occupiedHexes.containsKey(newPosition)) throw new IllegalStateException("Can not move");
+
+        occupiedHexes.remove(oldPosition);
+        unit.setPosition(newPosition);
+        occupiedHexes.put(newPosition, unit);
+
+    }
+
+
+    private void addMockUnits () {
+
+        InfantryUnit unitOne = new InfantryUnit(new Axial(2, 14), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
+        InfantryUnit unitTwo = new InfantryUnit(new Axial(1, 13), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
+
+        spawn(unitOne, new Axial(2, 14));
+        spawn(unitTwo, new Axial(1, 13));
+    }
+
+    private void spawn (AbstractUnit unit, Axial position) {
+
+        if (occupiedHexes.containsKey(position)) throw new IllegalStateException("TAKEN HEX");
+
+        unit.setPosition(position);
+        unitList.add(unit);
+        occupiedHexes.put(position, unit);
+
+    }
+
+    private boolean isFreeHex(Axial axial) {
+        if (occupiedHexes.containsKey(axial)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    public HashMap<Axial, AbstractUnit> getOccupiedHexes() {
+        return occupiedHexes;
+    }
+
+
+    public ArrayList<AbstractUnit> getUnitList() {
+        return unitList;
+    }
+
+
+
+}

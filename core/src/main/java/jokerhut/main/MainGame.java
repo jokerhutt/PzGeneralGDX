@@ -1,6 +1,5 @@
 package jokerhut.main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -24,7 +22,7 @@ import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.TerrainProps;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.entities.AbstractUnit;
-import jokerhut.main.entities.InfantryUnit;
+import jokerhut.main.screen.BattleField;
 import jokerhut.main.utils.HexDebugUtils;
 import jokerhut.main.utils.HexUtils;
 import jokerhut.main.utils.TerrainUtils;
@@ -44,7 +42,7 @@ public class MainGame extends ApplicationAdapter {
 
     private HashMap<Axial, Hex> hexMap;
 
-    private ArrayList<AbstractUnit> unitList;
+    private BattleField battleField;
 
     @Override
     public void create() {
@@ -57,32 +55,16 @@ public class MainGame extends ApplicationAdapter {
         map = new TmxMapLoader().load("map/pzcmap.tmx");
         hexmapRenderer = new HexagonalTiledMapRenderer(map, 1f);
         shapeRenderer = new ShapeRenderer();
+        battleField = new BattleField(this);
 
 
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
-        unitList = spawnUnits();
 
     }
 
-    private ArrayList<AbstractUnit> spawnUnits () {
-
-        // InfantryUnit unitOne = new InfantryUnit();
-        // 2,14 and 1,13
-
-        ArrayList<AbstractUnit> unitList = new ArrayList<>();
-
-        InfantryUnit unitOne = new InfantryUnit(new Axial(2, 14), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-        InfantryUnit unitTwo = new InfantryUnit(new Axial(1, 13), new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-
-        unitList.add(unitOne);
-        unitList.add(unitTwo);
-
-        return unitList;
-
-    }
 
 
 
@@ -111,7 +93,8 @@ public class MainGame extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        for (AbstractUnit unit : unitList) {
+
+        for (AbstractUnit unit : battleField.getUnitList()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
             batch.draw(unit.getSprite(), pixelCoordinates.x + GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y, GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
         }
