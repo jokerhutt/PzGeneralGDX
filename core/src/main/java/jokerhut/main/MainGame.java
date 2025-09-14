@@ -63,6 +63,8 @@ public class MainGame extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        camera.position.set(16 * GameConstants.HEX_SIZE, 16 * GameConstants.HEX_SIZE, 0);
+
         camera.update();
         hexmapRenderer.setView(camera);
         hexmapRenderer.render();
@@ -74,7 +76,9 @@ public class MainGame extends ApplicationAdapter {
 
         MapProperties p = map.getProperties();
         float tileW = p.get("tilewidth", Integer.class);     // 32
-        float tileH = p.get("tileheight", Integer.class);    // 32
+        float tileH = p.get("tileheight", Integer.class);
+
+
 
         final float size = tileW / 2f;
         final float root3 = (float) Math.sqrt(3);
