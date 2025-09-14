@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -16,12 +15,15 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.stage.widgets.HexInfoGroup;
+import jokerhut.main.stage.widgets.UnitInfoTable;
 
 public class SidebarStage extends Stage {
 
     private final Table sidebar;
     private final Texture bgTex;
     private HexInfoGroup hexInfoGroup;
+
+    private UnitInfoTable unitInfoTable;
 
     public SidebarStage(Viewport viewport, SpriteBatch batch) {
         super(viewport, batch);
@@ -34,8 +36,6 @@ public class SidebarStage extends Stage {
 
         bgTex = new Texture(Gdx.files.internal("ui/pzUiBorder.png"));
         sidebar.setBackground(new TextureRegionDrawable(new TextureRegion(bgTex)));
-
-        sidebar.setBackground(new TextureRegionDrawable(new TextureRegion(bgTex)));
         sidebar.setTouchable(Touchable.enabled);
         sidebar.addListener(new InputListener() {
             @Override
@@ -47,9 +47,8 @@ public class SidebarStage extends Stage {
         hexInfoGroup = new HexInfoGroup();
         sidebar.add(hexInfoGroup).expand().top().pad(10).row();
 
-        Texture scrollPage = new Texture(Gdx.files.internal("ui/verticalNote.png"));
-        Image scrollPageImage = new Image(scrollPage);
-        sidebar.add(scrollPageImage).size(90, 200).pad(10).row();
+        unitInfoTable = new UnitInfoTable();
+        sidebar.add(unitInfoTable).size(90, 200).pad(10).row();
 
         addActor(sidebar);
 
@@ -61,6 +60,7 @@ public class SidebarStage extends Stage {
         Axial axial = selection.axial();
 
         hexInfoGroup.updateInfo(terrain, axial);
+        unitInfoTable.update(selection.unit());
 
     }
 

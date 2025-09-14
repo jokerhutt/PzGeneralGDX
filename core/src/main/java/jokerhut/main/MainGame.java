@@ -136,7 +136,8 @@ public class MainGame extends ApplicationAdapter {
 
         for (AbstractUnit unit : battleField.getUnitList()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
-            batch.draw(unit.getSprite(), pixelCoordinates.x + GameConstants.PIXEL_X_DRAW_CORRECTION, pixelCoordinates.y,
+            batch.draw(unit.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
+                    pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
                     GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
         }
 
