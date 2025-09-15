@@ -12,6 +12,7 @@ public class UnitStatsGroup extends VerticalGroup {
     private final StatsGroupLabel healthRow;
     private final StatsGroupLabel softRow;
     private final StatsGroupLabel hardRow;
+    private final StatsGroupLabel movementLeftRow;
 
     private final Skin skin;
 
@@ -23,8 +24,10 @@ public class UnitStatsGroup extends VerticalGroup {
         healthRow = new StatsGroupLabel(skin, "icons/icon_health.png");
         softRow = new StatsGroupLabel(skin, "icons/icon_softAttack.png");
         hardRow = new StatsGroupLabel(skin, "icons/icon_hardAttack.png");
+        movementLeftRow = new StatsGroupLabel(skin, "icons/icon_movePoints.png");
 
         this.space(5f);
+        this.addActor(movementLeftRow);
         this.addActor(defenceRow);
         this.addActor(healthRow);
         this.addActor(softRow);
@@ -38,11 +41,13 @@ public class UnitStatsGroup extends VerticalGroup {
             healthRow.setValue("---");
             softRow.setValue("---");
             hardRow.setValue("---");
+            movementLeftRow.setValue("- / -");
         } else {
             defenceRow.setValue(String.valueOf(unit.getDefense()));
             healthRow.setValue(String.valueOf(unit.getHealth()));
             softRow.setValue(String.valueOf(unit.getSoftAttack()));
             hardRow.setValue(String.valueOf(unit.getHardAttack()));
+            movementLeftRow.setValue(String.valueOf(unit.getMovementPoints() + "/" + unit.getMovementPoints()));
         }
     }
 

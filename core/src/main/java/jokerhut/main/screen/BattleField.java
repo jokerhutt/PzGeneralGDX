@@ -40,11 +40,11 @@ public class BattleField {
 
         InfantryUnit unitOne = new InfantryUnit("15th Tommies", new Axial(20, 10),
                 new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-        InfantryUnit unitTwo = new InfantryUnit("3rd Highlanders", new Axial(23, 8),
+        InfantryUnit unitTwo = new InfantryUnit("3rd Highlanders", new Axial(22, 9),
                 new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
 
         spawn(unitOne, new Axial(20, 10));
-        spawn(unitTwo, new Axial(23, 8));
+        spawn(unitTwo, new Axial(22, 9));
     }
 
     private void spawn(AbstractUnit unit, Axial position) {
