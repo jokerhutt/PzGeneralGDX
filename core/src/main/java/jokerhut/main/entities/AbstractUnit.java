@@ -14,6 +14,7 @@ public abstract class AbstractUnit {
     private String name;
     private UnitType unitType;
     private Axial position;
+    private Integer movementPoints;
 
     private TextureRegion sprite;
 
@@ -79,6 +80,14 @@ public abstract class AbstractUnit {
 
     public void setUnitType(UnitType unitType) {
         this.unitType = unitType;
+    }
+
+    public Integer getMovementPoints() {
+        return movementPoints;
+    }
+
+    public void setMovementPoints(Integer movementPoints) {
+        this.movementPoints = movementPoints;
     }
 
 }

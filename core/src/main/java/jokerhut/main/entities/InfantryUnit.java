@@ -11,6 +11,7 @@ public class InfantryUnit extends AbstractUnit {
         setUnitType(UnitType.INFANTRY);
         setPosition(pos);
         setSprite(sprite);
+        setMovementPoints(2);
         setHealth(10f);
         setDefense(2f);
         setSoftAttack(3f);
