@@ -48,7 +48,7 @@ public class SidebarStage extends Stage {
         sidebar.add(hexInfoGroup).top().pad(10).row();
 
         unitInfoTable = new UnitInfoTable();
-        sidebar.add(unitInfoTable).size(90, 140).top().pad(10).row();
+        sidebar.add(unitInfoTable).size(90, 160).top().pad(10).row();
 
         addActor(sidebar);
 
