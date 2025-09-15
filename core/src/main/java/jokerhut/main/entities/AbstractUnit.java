@@ -3,6 +3,7 @@ package jokerhut.main.entities;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.enums.UnitType;
 
 public abstract class AbstractUnit {
 
@@ -11,7 +12,7 @@ public abstract class AbstractUnit {
     private float softAttack;
     private float hardAttack;
     private String name;
-    private String unitType;
+    private UnitType unitType;
     private Axial position;
 
     private TextureRegion sprite;
@@ -70,6 +71,14 @@ public abstract class AbstractUnit {
 
     public void setSprite(TextureRegion sprite) {
         this.sprite = sprite;
+    }
+
+    public UnitType getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(UnitType unitType) {
+        this.unitType = unitType;
     }
 
 }

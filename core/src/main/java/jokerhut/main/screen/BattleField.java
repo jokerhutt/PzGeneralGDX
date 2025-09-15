@@ -38,9 +38,9 @@ public class BattleField {
 
     private void addMockUnits() {
 
-        InfantryUnit unitOne = new InfantryUnit(new Axial(20, 10),
+        InfantryUnit unitOne = new InfantryUnit("15th Tommies", new Axial(20, 10),
                 new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
-        InfantryUnit unitTwo = new InfantryUnit(new Axial(23, 8),
+        InfantryUnit unitTwo = new InfantryUnit("3rd Highlanders", new Axial(23, 8),
                 new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
 
         spawn(unitOne, new Axial(20, 10));

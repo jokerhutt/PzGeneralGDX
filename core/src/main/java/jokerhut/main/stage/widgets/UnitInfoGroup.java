@@ -1,6 +1,7 @@
 package jokerhut.main.stage.widgets;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -19,8 +20,10 @@ public class UnitInfoGroup extends VerticalGroup {
         unitName = new Label("----", skin);
         unitType = new Label("----", skin);
 
-        unitName.setFontScale(0.7f);
-        unitType.setFontScale(0.7f);
+        unitName.setColor(Color.BLACK);
+        unitType.setColor(Color.BLACK);
+        unitName.setFontScale(0.4f);
+        unitType.setFontScale(0.4f);
 
         this.space(5f);
         this.addActor(unitName);
@@ -34,7 +37,7 @@ public class UnitInfoGroup extends VerticalGroup {
             unitType.setText("---");
         } else {
             unitName.setText(unit.getName());
-            unitType.setText(unit.getName());
+            unitType.setText(unit.getUnitType().toString());
         }
 
     }

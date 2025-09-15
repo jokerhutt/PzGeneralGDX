@@ -1,11 +1,14 @@
 package jokerhut.main.entities;
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.enums.UnitType;
 
 public class InfantryUnit extends AbstractUnit {
-    public InfantryUnit(Axial pos, TextureRegion sprite) {
-        setName("Infantry");
+    public InfantryUnit(String name, Axial pos, TextureRegion sprite) {
+        setName(name);
+        setUnitType(UnitType.INFANTRY);
         setPosition(pos);
         setSprite(sprite);
         setHealth(10f);

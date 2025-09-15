@@ -7,16 +7,26 @@ import jokerhut.main.DTs.SelectionListener;
 public class SelectionState implements SelectionListener {
 
     private Selection current;
-    public void onSelect(Selection s){ current = s; }
+    private MovementOverlay movementOverlay;
 
-    public void clear(){ current = null; }
+    public void onSelect(Selection s) {
+        current = s;
+    }
 
-    public boolean has(){ return current != null; }
+    public void clear() {
+        current = null;
+    }
 
-    public Selection getCurrentSelection(){ return current; }
+    public boolean has() {
+        return current != null;
+    }
 
-    public boolean isSelected(Axial a){
-    return current != null && current.axial().equals(a);
-  }
+    public Selection getCurrentSelection() {
+        return current;
+    }
+
+    public boolean isSelected(Axial a) {
+        return current != null && current.axial().equals(a);
+    }
 
 }
