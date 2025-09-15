@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import jokerhut.main.MainGame;
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.entities.AbstractUnit;
+import jokerhut.main.entities.ArmoredUnit;
 import jokerhut.main.entities.InfantryUnit;
+import jokerhut.main.enums.Faction;
 
 public class BattleField {
 
@@ -42,12 +44,16 @@ public class BattleField {
     private void addMockUnits() {
 
         InfantryUnit unitOne = new InfantryUnit("15th Tommies", new Axial(20, 10),
-                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
+                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
         InfantryUnit unitTwo = new InfantryUnit("3rd Highlanders", new Axial(22, 9),
-                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))));
+                new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
+
+        ArmoredUnit armoredOne = new ArmoredUnit("Panzer Lehr", new Axial(18, 6),
+                new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
 
         spawn(unitOne, new Axial(20, 10));
         spawn(unitTwo, new Axial(22, 9));
+        spawn(armoredOne, new Axial(18, 6));
     }
 
     private void spawn(AbstractUnit unit, Axial position) {

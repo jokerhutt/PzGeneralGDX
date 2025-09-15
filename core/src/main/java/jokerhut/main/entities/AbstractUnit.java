@@ -3,6 +3,7 @@ package jokerhut.main.entities;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.UnitType;
 
 public abstract class AbstractUnit {
@@ -16,6 +17,7 @@ public abstract class AbstractUnit {
     private Axial position;
     private Integer movementPoints;
     private Integer startingMovementPoints;
+    private Faction faction;
 
     private TextureRegion sprite;
 
@@ -97,6 +99,14 @@ public abstract class AbstractUnit {
 
     public void setStartingMovementPoints(Integer startingMovementPoints) {
         this.startingMovementPoints = startingMovementPoints;
+    }
+
+    public Faction getFaction() {
+        return faction;
+    }
+
+    public void setFaction(Faction faction) {
+        this.faction = faction;
     }
 
 }
