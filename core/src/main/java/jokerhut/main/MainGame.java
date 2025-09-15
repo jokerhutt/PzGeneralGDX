@@ -126,7 +126,7 @@ public class MainGame extends ApplicationAdapter {
 
             MovementOverlay movementOverlay = selectionState.getMovementOverlay();
 
-            if (movementOverlay != null) {
+            if (movementOverlay != null && currentSelection.unit() != null) {
 
                 HashMap<Axial, Integer> reachableCosts = movementOverlay.reachableCosts();
 

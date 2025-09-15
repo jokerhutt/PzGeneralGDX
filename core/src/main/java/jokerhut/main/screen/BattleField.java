@@ -23,16 +23,19 @@ public class BattleField {
 
     }
 
-    public void moveUnit(AbstractUnit unit, Axial newPosition) {
+    public boolean moveUnit(AbstractUnit unit, Axial newPosition, Integer newMovePoints) {
 
         Axial oldPosition = unit.getPosition();
 
         if (occupiedHexes.containsKey(newPosition))
-            throw new IllegalStateException("Can not move");
+            return false;
 
         occupiedHexes.remove(oldPosition);
         unit.setPosition(newPosition);
+        unit.setMovementPoints(newMovePoints);
         occupiedHexes.put(newPosition, unit);
+
+        return true;
 
     }
 

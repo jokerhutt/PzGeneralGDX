@@ -3,9 +3,11 @@ package jokerhut.main.selection;
 import java.util.HashMap;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.ClickEvent;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
+import jokerhut.main.enums.SelectionType;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.service.MovementService;
 
@@ -22,14 +24,44 @@ public class SelectionState implements SelectionListener {
         this.battleFieldContext = battleFieldContext;
     }
 
-    public void onSelect(Selection selection) {
-        this.current = selection;
+    public void onSelect(ClickEvent clickEvent) {
 
-        if (selection == null || selection.unit() == null) {
+        if (clickEvent == null) {
             this.movementOverlay = null;
-        } else {
-            this.movementOverlay = MovementService.compute(current.axial(), current.unit().getMovementPoints(),
-                    gameMapContext, battleFieldContext);
+            return;
+        }
+
+        if (clickEvent.selectionType() == SelectionType.SELECTION) {
+            if (clickEvent.unit() != null) {
+                this.movementOverlay = MovementService.compute(clickEvent.axial(),
+                        clickEvent.unit().getMovementPoints(),
+                        gameMapContext, battleFieldContext);
+            }
+
+            this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
+        } else if (this.current != null && this.movementOverlay != null
+                && clickEvent.selectionType() == SelectionType.MOUSEACTION) {
+            Axial newIntendedPosition = clickEvent.axial();
+            HashMap<Axial, Integer> reachableHexes = movementOverlay.reachableCosts();
+
+            if (reachableHexes.containsKey(newIntendedPosition)) {
+                Integer currentMovementPoints = current.unit().getMovementPoints();
+                Integer costForMovement = reachableHexes.get(newIntendedPosition);
+                if (costForMovement == null)
+                    return;
+                Integer newPoints = currentMovementPoints - costForMovement;
+
+                if (newPoints >= 0) {
+                    if (battleFieldContext.moveUnit(current.unit(), newIntendedPosition, newPoints)) {
+                        this.current = new Selection(clickEvent.axial(), clickEvent.hex(), current.unit());
+                        this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+                                current.unit().getMovementPoints(),
+                                gameMapContext, battleFieldContext);
+                    }
+
+                }
+            }
+
         }
 
     }

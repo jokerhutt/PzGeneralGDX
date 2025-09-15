@@ -2,6 +2,6 @@ package jokerhut.main.DTs;
 
 public interface SelectionListener {
 
-    void onSelect(Selection selection);
+    void onSelect(ClickEvent selection);
 
 }
