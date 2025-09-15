@@ -1,6 +1,8 @@
 package jokerhut.main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -26,9 +28,12 @@ import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.TerrainProps;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.entities.AbstractUnit;
+import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.HexDebugType;
 import jokerhut.main.input.InputProcessor;
 import jokerhut.main.screen.BattleField;
+import jokerhut.main.screen.PlayerState;
+import jokerhut.main.screen.TurnManager;
 import jokerhut.main.selection.MovementOverlay;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
@@ -59,6 +64,11 @@ public class MainGame extends ApplicationAdapter {
     private InputProcessor inputProcessor;
     private SelectionState selectionState;
 
+    // ----- TURN RELATED STUFF ----- //
+    private PlayerState axisPlayer;
+    private PlayerState alliedPlayer;
+    private TurnManager turnManager;
+
     // ----- HUD STUFF ----- //
     private SidebarStage sidebarStage;
 
@@ -75,14 +85,23 @@ public class MainGame extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         battleField = new BattleField(this);
 
+        this.axisPlayer = new PlayerState(Faction.GERMAN, 500);
+        this.alliedPlayer = new PlayerState(Faction.BRITISH, 500);
+
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
-        selectionState = new SelectionState(hexMap, battleField);
+        List<PlayerState> players = new ArrayList<>();
+        players.add(alliedPlayer);
+        players.add(axisPlayer);
+        turnManager = new TurnManager(players);
+        turnManager.startTurn();
+
+        selectionState = new SelectionState(hexMap, battleField, turnManager);
         broadcaster.subscribe(selectionState);
 
-        sidebarStage = new SidebarStage(new ScreenViewport(), batch);
+        sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionState);
         inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();

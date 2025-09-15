@@ -9,6 +9,7 @@ import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
 import jokerhut.main.enums.SelectionType;
 import jokerhut.main.screen.BattleField;
+import jokerhut.main.screen.TurnManager;
 import jokerhut.main.service.MovementService;
 
 public class SelectionState implements SelectionListener {
@@ -18,10 +19,13 @@ public class SelectionState implements SelectionListener {
 
     private HashMap<Axial, Hex> gameMapContext;
     private BattleField battleFieldContext;
+    private TurnManager turnManagerContext;
 
-    public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext) {
+    public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext,
+            TurnManager turnManagerContext) {
         this.gameMapContext = gameMapContext;
         this.battleFieldContext = battleFieldContext;
+        this.turnManagerContext = turnManagerContext;
     }
 
     public void onSelect(ClickEvent clickEvent) {
@@ -32,10 +36,13 @@ public class SelectionState implements SelectionListener {
         }
 
         if (clickEvent.selectionType() == SelectionType.SELECTION) {
-            if (clickEvent.unit() != null) {
+            if (clickEvent.unit() != null
+                    && clickEvent.unit().getFaction() == turnManagerContext.getCurrentPlayer().getFaction()) {
                 this.movementOverlay = MovementService.compute(clickEvent.axial(),
                         clickEvent.unit().getMovementPoints(),
                         gameMapContext, battleFieldContext);
+            } else if (clickEvent != null) {
+                this.movementOverlay = null;
             }
 
             this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
