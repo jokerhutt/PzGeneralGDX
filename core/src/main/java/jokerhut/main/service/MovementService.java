@@ -34,25 +34,31 @@ public class MovementService {
 
         while (!priorityQueue.isEmpty()) {
 
+            // Set Current Node
             Node currentNode = priorityQueue.poll();
             if (currentNode.cost() != cost.get(currentNode.pos()))
                 continue;
 
+            // Loop over each neighboring hex
             for (int[] direction : hexNeighborDirections) {
 
+                // Get neighbors position
                 Axial neighborDirection = new Axial(currentNode.pos().q() + direction[0],
                         currentNode.pos().r() + direction[1]);
 
+                // If occupied or out of map bounds, skip
                 if (!hexMap.containsKey(neighborDirection))
                     continue;
                 if (battleField.getOccupiedHexes().containsKey(neighborDirection))
                     continue;
 
+                // Get neighbors movement cost, skip if too high
                 int neighborToEnterCost = hexMap.get(neighborDirection).getMoveCost();
                 int newCost = currentNode.cost() + neighborToEnterCost;
                 if (newCost > movementPointsLeft)
                     continue;
 
+                // Set path to the node with the best overall cost
                 Integer bestPath = cost.get(neighborDirection);
                 if (bestPath == null || newCost < bestPath) {
 

@@ -115,6 +115,13 @@ public class MainGame extends ApplicationAdapter {
             Hex currentlySelectedHex = currentSelection.hex();
             Vector2 currentPosition = HexUtils.axialToPixelCenter(currentlySelectedHex);
 
+            Color hexFillColor = new Color(Color.BLUE);
+            hexFillColor.a = 0.5f;
+
+            shapeRenderer.setColor(hexFillColor);
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+
             HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
 
             MovementOverlay movementOverlay = selectionState.getMovementOverlay();
@@ -133,11 +140,15 @@ public class MainGame extends ApplicationAdapter {
                             && currentHex.getR() == currentlySelectedHex.getR()) {
                         continue;
                     } else if (reachableCosts.containsKey(currentAxial)) {
-                        shapeRenderer.setColor(Color.GREEN);
+                        hexFillColor.set(Color.LIGHT_GRAY);
+                        hexFillColor.a = 0.5f;
+                        shapeRenderer.setColor(hexFillColor);
                         HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,
                                 GameConstants.HEX_Y_SCALE);
                     } else {
-                        shapeRenderer.setColor(Color.RED);
+                        hexFillColor.set(Color.GRAY);
+                        hexFillColor.a = 0.5f;
+                        shapeRenderer.setColor(hexFillColor);
                         HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,
                                 GameConstants.HEX_Y_SCALE);
                     }
