@@ -50,4 +50,36 @@ public class SelectionState implements SelectionListener {
         return current != null && current.axial().equals(a);
     }
 
+    public Selection getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(Selection current) {
+        this.current = current;
+    }
+
+    public MovementOverlay getMovementOverlay() {
+        return movementOverlay;
+    }
+
+    public void setMovementOverlay(MovementOverlay movementOverlay) {
+        this.movementOverlay = movementOverlay;
+    }
+
+    public HashMap<Axial, Hex> getGameMapContext() {
+        return gameMapContext;
+    }
+
+    public void setGameMapContext(HashMap<Axial, Hex> gameMapContext) {
+        this.gameMapContext = gameMapContext;
+    }
+
+    public BattleField getBattleFieldContext() {
+        return battleFieldContext;
+    }
+
+    public void setBattleFieldContext(BattleField battleFieldContext) {
+        this.battleFieldContext = battleFieldContext;
+    }
+
 }

@@ -19,7 +19,7 @@ public class MovementService {
             { -1, 0 }, { -1, +1 }, { 0, +1 }
     };
 
-    public MovementOverlay compute(Axial startCoordinate, int movementPointsLeft, HashMap<Axial, Hex> hexMap,
+    public static MovementOverlay compute(Axial startCoordinate, int movementPointsLeft, HashMap<Axial, Hex> hexMap,
             BattleField battleField) {
 
         HashMap<Axial, Integer> cost = new HashMap<>();

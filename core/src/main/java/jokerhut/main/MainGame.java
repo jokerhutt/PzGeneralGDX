@@ -1,6 +1,7 @@
 package jokerhut.main;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -28,6 +29,7 @@ import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.enums.HexDebugType;
 import jokerhut.main.input.InputProcessor;
 import jokerhut.main.screen.BattleField;
+import jokerhut.main.selection.MovementOverlay;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
 import jokerhut.main.stage.SidebarStage;
@@ -77,7 +79,7 @@ public class MainGame extends ApplicationAdapter {
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
-        selectionState = new SelectionState();
+        selectionState = new SelectionState(hexMap, battleField);
         broadcaster.subscribe(selectionState);
 
         sidebarStage = new SidebarStage(new ScreenViewport(), batch);
@@ -112,7 +114,37 @@ public class MainGame extends ApplicationAdapter {
 
             Hex currentlySelectedHex = currentSelection.hex();
             Vector2 currentPosition = HexUtils.axialToPixelCenter(currentlySelectedHex);
+
             HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
+
+            MovementOverlay movementOverlay = selectionState.getMovementOverlay();
+
+            if (movementOverlay != null) {
+
+                HashMap<Axial, Integer> reachableCosts = movementOverlay.reachableCosts();
+
+                for (Map.Entry<Axial, Hex> entry : hexMap.entrySet()) {
+
+                    Hex currentHex = entry.getValue();
+                    Axial currentAxial = entry.getKey();
+                    Vector2 currentPixelPosition = HexUtils.axialToPixelCenter(currentHex);
+
+                    if (currentHex.getQ() == currentlySelectedHex.getQ()
+                            && currentHex.getR() == currentlySelectedHex.getR()) {
+                        continue;
+                    } else if (reachableCosts.containsKey(currentAxial)) {
+                        shapeRenderer.setColor(Color.GREEN);
+                        HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,
+                                GameConstants.HEX_Y_SCALE);
+                    } else {
+                        shapeRenderer.setColor(Color.RED);
+                        HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,
+                                GameConstants.HEX_Y_SCALE);
+                    }
+
+                }
+
+            }
 
             shapeRenderer.end();
 
