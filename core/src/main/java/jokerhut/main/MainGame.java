@@ -206,16 +206,10 @@ public class MainGame extends ApplicationAdapter {
         batch.begin();
 
         for (AbstractUnit unit : axisPlayer.getUnits()) {
-            Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
-            batch.draw(unit.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
-                    pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
-                    GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+            unit.render(batch);
         }
         for (AbstractUnit unit : alliedPlayer.getUnits()) {
-            Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
-            batch.draw(unit.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
-                    pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
-                    GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+            unit.render(batch);
         }
         HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 

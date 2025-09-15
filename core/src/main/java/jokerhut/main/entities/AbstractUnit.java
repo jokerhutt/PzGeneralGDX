@@ -1,10 +1,14 @@
 package jokerhut.main.entities;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import jokerhut.main.DTs.Axial;
+import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.UnitType;
+import jokerhut.main.utils.HexUtils;
 
 public abstract class AbstractUnit {
 
@@ -20,6 +24,15 @@ public abstract class AbstractUnit {
     private Faction faction;
 
     private TextureRegion sprite;
+
+    public void render(SpriteBatch batch) {
+
+        Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(this.getPosition());
+        batch.draw(this.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
+                pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
+                GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+
+    }
 
     public float getHealth() {
         return health;
