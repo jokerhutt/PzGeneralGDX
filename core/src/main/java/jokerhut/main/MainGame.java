@@ -83,10 +83,11 @@ public class MainGame extends ApplicationAdapter {
         map = new TmxMapLoader().load("map/pzcmap.tmx");
         hexmapRenderer = new HexagonalTiledMapRenderer(map, 1f);
         shapeRenderer = new ShapeRenderer();
-        battleField = new BattleField(this);
 
         this.axisPlayer = new PlayerState(Faction.GERMAN, 500);
         this.alliedPlayer = new PlayerState(Faction.BRITISH, 500);
+
+        battleField = new BattleField(this, axisPlayer, alliedPlayer);
 
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
@@ -102,7 +103,7 @@ public class MainGame extends ApplicationAdapter {
         broadcaster.subscribe(selectionState);
 
         sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionState);
-        inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster);
+        inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster, sidebarStage);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(sidebarStage);
@@ -131,8 +132,7 @@ public class MainGame extends ApplicationAdapter {
             shapeRenderer.setColor(Color.BLUE);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            Hex currentlySelectedHex = currentSelection.hex();
-            Vector2 currentPosition = HexUtils.axialToPixelCenter(currentlySelectedHex);
+            Vector2 currentPosition = HexUtils.axialToPixelCenter(currentSelection.axial());
 
             Color hexFillColor = new Color(Color.BLUE);
             hexFillColor.a = 0.5f;
@@ -152,11 +152,13 @@ public class MainGame extends ApplicationAdapter {
                 for (Map.Entry<Axial, Hex> entry : hexMap.entrySet()) {
 
                     Hex currentHex = entry.getValue();
+                    if (currentHex == null)
+                        continue;
                     Axial currentAxial = entry.getKey();
                     Vector2 currentPixelPosition = HexUtils.axialToPixelCenter(currentHex);
 
-                    if (currentHex.getQ() == currentlySelectedHex.getQ()
-                            && currentHex.getR() == currentlySelectedHex.getR()) {
+                    if (currentHex.getQ() == currentSelection.axial().q()
+                            && currentHex.getR() == currentSelection.axial().r()) {
                         continue;
                     } else if (reachableCosts.containsKey(currentAxial)) {
                         hexFillColor.set(Color.LIGHT_GRAY);
@@ -177,8 +179,9 @@ public class MainGame extends ApplicationAdapter {
             }
 
             shapeRenderer.end();
-
-            sidebarStage.updateState(currentSelection);
+            if (currentSelection != null) {
+                sidebarStage.updateState(currentSelection);
+            }
 
         }
 
@@ -196,13 +199,18 @@ public class MainGame extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        for (AbstractUnit unit : battleField.getUnitList()) {
+        for (AbstractUnit unit : axisPlayer.getUnits()) {
             Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
             batch.draw(unit.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
                     pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
                     GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
         }
-
+        for (AbstractUnit unit : alliedPlayer.getUnits()) {
+            Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(unit.getPosition());
+            batch.draw(unit.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
+                    pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
+                    GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+        }
         HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 
         batch.end();
@@ -218,4 +226,11 @@ public class MainGame extends ApplicationAdapter {
         map.dispose();
         shapeRenderer.dispose();
     }
+
+    @Override
+    public void resize(int width, int height) {
+        sidebarStage.getViewport().update(width, height, true);
+        sidebarStage.layoutSidebar();
+    }
+
 }

@@ -30,4 +30,10 @@ public class StatsGroupLabel extends Table {
         label.setText(value);
     }
 
+    public void setFontScale(float s) {
+        label.setFontScale(0.7f * s);
+        label.setFontScale(0.7f * s);
+        getCell(icon).size(10 * s, 10 * s);
+    }
+
 }

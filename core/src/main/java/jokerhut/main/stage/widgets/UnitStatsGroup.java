@@ -51,4 +51,16 @@ public class UnitStatsGroup extends VerticalGroup {
         }
     }
 
+    public void setFontScale(float s) {
+        defenceRow.setFontScale(s);
+        healthRow.setFontScale(s);
+
+        softRow.setFontScale(s);
+
+        hardRow.setFontScale(s);
+
+        movementLeftRow.setFontScale(s);
+
+    }
+
 }

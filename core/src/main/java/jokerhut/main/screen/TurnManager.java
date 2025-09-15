@@ -3,6 +3,7 @@ package jokerhut.main.screen;
 import java.util.List;
 
 import jokerhut.main.entities.AbstractUnit;
+import jokerhut.main.enums.Faction;
 
 public class TurnManager {
 
@@ -12,6 +13,13 @@ public class TurnManager {
 
     public TurnManager(List<PlayerState> players) {
         this.players = players;
+        if (getCurrentPlayer().getFaction() == Faction.BRITISH) {
+
+            System.out.println("Current player is: British");
+        } else {
+
+            System.out.println("Current player is: German");
+        }
     }
 
     public PlayerState getCurrentPlayer() {

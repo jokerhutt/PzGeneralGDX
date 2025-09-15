@@ -1,6 +1,5 @@
 package jokerhut.main.screen;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
@@ -17,10 +16,13 @@ import jokerhut.main.enums.Faction;
 public class BattleField {
 
     private final HashMap<Axial, AbstractUnit> occupiedHexes = new HashMap<>();
-    private final ArrayList<AbstractUnit> unitList = new ArrayList<>();
+    private final PlayerState axisPlayer;
+    private final PlayerState alliedPlayer;
 
-    public BattleField(MainGame gameContext) {
+    public BattleField(MainGame gameContext, PlayerState axisPlayer, PlayerState alliedPlayer) {
 
+        this.axisPlayer = axisPlayer;
+        this.alliedPlayer = alliedPlayer;
         addMockUnits();
 
     }
@@ -51,18 +53,18 @@ public class BattleField {
         ArmoredUnit armoredOne = new ArmoredUnit("Panzer Lehr", new Axial(18, 6),
                 new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
 
-        spawn(unitOne, new Axial(20, 10));
-        spawn(unitTwo, new Axial(22, 9));
-        spawn(armoredOne, new Axial(18, 6));
+        spawn(unitOne, new Axial(20, 10), alliedPlayer);
+        spawn(unitTwo, new Axial(22, 9), alliedPlayer);
+        spawn(armoredOne, new Axial(18, 6), axisPlayer);
     }
 
-    private void spawn(AbstractUnit unit, Axial position) {
+    private void spawn(AbstractUnit unit, Axial position, PlayerState player) {
 
         if (occupiedHexes.containsKey(position))
             throw new IllegalStateException("TAKEN HEX");
 
+        player.getUnits().add(unit);
         unit.setPosition(position);
-        unitList.add(unit);
         occupiedHexes.put(position, unit);
 
     }
@@ -81,10 +83,6 @@ public class BattleField {
 
     public HashMap<Axial, AbstractUnit> getOccupiedHexes() {
         return occupiedHexes;
-    }
-
-    public ArrayList<AbstractUnit> getUnitList() {
-        return unitList;
     }
 
 }

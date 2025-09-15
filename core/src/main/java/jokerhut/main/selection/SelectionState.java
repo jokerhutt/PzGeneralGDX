@@ -75,6 +75,7 @@ public class SelectionState implements SelectionListener {
 
     public void clear() {
         current = null;
+        movementOverlay = null;
     }
 
     public boolean has() {

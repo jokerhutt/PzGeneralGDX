@@ -35,7 +35,7 @@ public class UnitInfoTable extends Table {
         factionImage.setScaling(Scaling.fit);
         factionImage.setSize(16, 16);
         factionImage.setDrawable(null);
-        this.add(factionImage).size(16, 16).pad(5).row();
+        this.add(factionImage).size(16, 16).row();
 
         unitInfoGroup = new UnitInfoGroup();
         this.add(unitInfoGroup).expand().top().pad(10).row();
@@ -43,6 +43,12 @@ public class UnitInfoTable extends Table {
         unitStatsGroup = new UnitStatsGroup();
         this.add(unitStatsGroup).expand().top().pad(10).row();
 
+    }
+
+    public void resizeFonts(float s) {
+        unitInfoGroup.setFontScale(s);
+        unitStatsGroup.setFontScale(s);
+        getCell(factionImage).size(16 * s, 16 * s);
     }
 
     public void update(AbstractUnit unit) {

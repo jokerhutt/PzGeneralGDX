@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -15,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.screen.TurnManager;
 import jokerhut.main.selection.SelectionState;
@@ -30,32 +29,26 @@ public class SidebarStage extends Stage {
     private TurnManager turnManagerContext;
     private UnitInfoTable unitInfoTable;
     private SelectionState selectionState;
+    private final float baseSidebarPx = 120f;
+    private final float sidebarFrac = 0.18f;
+    private float fontScale = 0.4f;
 
     public SidebarStage(Viewport viewport, SpriteBatch batch, TurnManager turnManagerContext,
             SelectionState selectionState) {
         super(viewport, batch);
 
         sidebar = new Table();
-        float w = 120f;
-        float vh = viewport.getWorldHeight();
-        float vw = viewport.getWorldWidth();
-        sidebar.setBounds(vw - w, 0, w, vh);
-
         bgTex = new Texture(Gdx.files.internal("ui/pzUiBorder.png"));
         sidebar.setBackground(new TextureRegionDrawable(new TextureRegion(bgTex)));
         sidebar.setTouchable(Touchable.enabled);
-        sidebar.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent e, float x, float y, int p, int b) {
-                return true;
-            }
-        });
+        sidebar.defaults().expandX().fillX().pad(10);
+        addActor(sidebar);
 
-        hexInfoGroup = new HexInfoGroup();
+        hexInfoGroup = new HexInfoGroup(turnManagerContext);
         sidebar.add(hexInfoGroup).top().pad(10).row();
 
         unitInfoTable = new UnitInfoTable();
-        sidebar.add(unitInfoTable).size(90, 160).top().pad(10).row();
+        sidebar.add(unitInfoTable).top().pad(20).growY().row();
 
         this.turnManagerContext = turnManagerContext;
         this.selectionState = selectionState;
@@ -65,25 +58,56 @@ public class SidebarStage extends Stage {
         endTurnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent e, float x, float y) {
+                System.out.println("clicked");
                 turnManagerContext.endTurn();
                 selectionState.clear();
+                updateState(null);
+                hexInfoGroup.updateTurnState(turnManagerContext);
             }
         });
 
-        sidebar.add(endTurnButton).width(110).height(32).pad(8).row();
+        sidebar.add(endTurnButton).height(32).pad(8).row();
 
-        addActor(sidebar);
+        layoutSidebar();
 
+    }
+
+    private void rescaleFonts(float s) {
+        hexInfoGroup.setFontScale(s);
+        unitInfoTable.resizeFonts(s);
     }
 
     public void updateState(Selection selection) {
 
-        String terrain = selection.hex().getTerrain();
-        Axial axial = selection.axial();
+        if (selection == null) {
+            hexInfoGroup.updateInfo(null, null);
+            unitInfoTable.update(null);
+            return;
+        }
 
-        hexInfoGroup.updateInfo(terrain, axial);
+        Hex h = selection.hex();
+        if (h == null)
+            h = selectionState.getGameMapContext().get(selection.axial());
+        if (h == null) { // off-map or cleared
+            hexInfoGroup.updateInfo(null, selection.axial());
+            unitInfoTable.update(selection.unit());
+            return;
+        }
+        hexInfoGroup.updateInfo(h.getTerrain(), selection.axial());
         unitInfoTable.update(selection.unit());
 
+    }
+
+    public void layoutSidebar() {
+        float vw = getViewport().getWorldWidth();
+        float w = Math.max(120f, vw * 0.18f);
+        sidebar.setBounds(vw - w, 0, w, getViewport().getWorldHeight());
+        float s = w / baseSidebarPx;
+        if (Math.abs(s - fontScale) > 0.01f) {
+            fontScale = s;
+            rescaleFonts(fontScale);
+        }
+        sidebar.invalidateHierarchy();
     }
 
     public Table getSideBar() {

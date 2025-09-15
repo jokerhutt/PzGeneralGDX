@@ -42,4 +42,9 @@ public class UnitInfoGroup extends VerticalGroup {
 
     }
 
+    public void setFontScale(float s) {
+        unitName.setFontScale(0.7f * s);
+        unitType.setFontScale(0.7f * s);
+    }
+
 }
