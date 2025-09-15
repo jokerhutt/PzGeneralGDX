@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
+import jokerhut.main.enums.Faction;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.selection.MovementOverlay;
 
@@ -20,7 +21,7 @@ public class MovementService {
     };
 
     public static MovementOverlay compute(Axial startCoordinate, int movementPointsLeft, HashMap<Axial, Hex> hexMap,
-            BattleField battleField) {
+            BattleField battleField, Faction playerFaction) {
 
         HashMap<Axial, Integer> cost = new HashMap<>();
         HashMap<Axial, Axial> parent = new HashMap<>();
@@ -43,8 +44,13 @@ public class MovementService {
 
                 if (!hexMap.containsKey(neighborDirection))
                     continue;
-                if (battleField.getOccupiedHexes().containsKey(neighborDirection))
-                    continue;
+                if (battleField.getOccupiedHexes().containsKey(neighborDirection)) {
+
+                    if (battleField.unitAt(neighborDirection).getFaction() == playerFaction) {
+                        continue;
+                    }
+
+                }
 
                 int neighborToEnterCost = hexMap.get(neighborDirection).getMoveCost();
                 int newCost = currentNode.cost() + neighborToEnterCost;

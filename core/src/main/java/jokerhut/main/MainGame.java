@@ -161,7 +161,13 @@ public class MainGame extends ApplicationAdapter {
                             && currentHex.getR() == currentSelection.axial().r()) {
                         continue;
                     } else if (reachableCosts.containsKey(currentAxial)) {
-                        hexFillColor.set(Color.LIGHT_GRAY);
+
+                        if (battleField.unitAt(currentAxial) != null) {
+                            hexFillColor.set(Color.RED);
+                            shapeRenderer.setColor(hexFillColor);
+                        } else {
+                            hexFillColor.set(Color.LIGHT_GRAY);
+                        }
                         hexFillColor.a = 0.5f;
                         shapeRenderer.setColor(hexFillColor);
                         HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,

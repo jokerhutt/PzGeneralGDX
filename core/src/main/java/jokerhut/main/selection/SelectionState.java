@@ -7,6 +7,7 @@ import jokerhut.main.DTs.ClickEvent;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
+import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.SelectionType;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.screen.TurnManager;
@@ -30,6 +31,8 @@ public class SelectionState implements SelectionListener {
 
     public void onSelect(ClickEvent clickEvent) {
 
+        Faction playerFaction = turnManagerContext.getCurrentPlayer().getFaction();
+
         if (clickEvent == null) {
             this.movementOverlay = null;
             return;
@@ -40,7 +43,7 @@ public class SelectionState implements SelectionListener {
                     && clickEvent.unit().getFaction() == turnManagerContext.getCurrentPlayer().getFaction()) {
                 this.movementOverlay = MovementService.compute(clickEvent.axial(),
                         clickEvent.unit().getMovementPoints(),
-                        gameMapContext, battleFieldContext);
+                        gameMapContext, battleFieldContext, playerFaction);
             } else if (clickEvent != null) {
                 this.movementOverlay = null;
             }
@@ -63,7 +66,7 @@ public class SelectionState implements SelectionListener {
                         this.current = new Selection(clickEvent.axial(), clickEvent.hex(), current.unit());
                         this.movementOverlay = MovementService.compute(current.unit().getPosition(),
                                 current.unit().getMovementPoints(),
-                                gameMapContext, battleFieldContext);
+                                gameMapContext, battleFieldContext, playerFaction);
                     }
 
                 }
