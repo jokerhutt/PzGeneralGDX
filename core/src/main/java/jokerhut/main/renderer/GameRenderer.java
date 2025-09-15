@@ -1,0 +1,60 @@
+package jokerhut.main.renderer;
+
+import java.util.HashMap;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import jokerhut.main.DTs.Axial;
+import jokerhut.main.DTs.Hex;
+import jokerhut.main.screen.BattleField;
+import jokerhut.main.screen.PlayerState;
+import jokerhut.main.selection.SelectionState;
+
+public class GameRenderer implements Renderer {
+    private final OrthographicCamera camera;
+    private final ShapeRenderer shapeRenderer;
+    private final SpriteBatch batch;
+    private final MovementOverlayRenderer movementOverlayRenderer;
+    private final OutlineRenderer outlineRenderer;
+    private final UnitRenderer unitRenderer;
+
+    public GameRenderer(OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch batch,
+            HashMap<Axial, Hex> hexMap, BattleField battleField, SelectionState selectionState, PlayerState axisPlayer,
+            PlayerState alliedPlayer) {
+        this.camera = camera;
+        this.shapeRenderer = shapeRenderer;
+        this.batch = batch;
+
+        this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionState, hexMap, battleField);
+        this.outlineRenderer = new OutlineRenderer(shapeRenderer, hexMap);
+        this.unitRenderer = new UnitRenderer(batch, axisPlayer, alliedPlayer);
+
+    }
+
+    public void render() {
+        // camera.update();
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        // shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        movementOverlayRenderer.render(); // draws selected hex + reachable cells
+        shapeRenderer.end();
+
+        // outlines
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        outlineRenderer.render();
+        shapeRenderer.end();
+
+        //// sprites
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        unitRenderer.render();
+
+        batch.end();
+
+    }
+}
