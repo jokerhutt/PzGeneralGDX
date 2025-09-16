@@ -60,6 +60,7 @@ public class MovementOverlayRenderer implements Renderer {
         if (movementOverlay != null && currentSelection.unit() != null) {
 
             HashMap<Axial, Integer> reachableCosts = movementOverlay.reachableCosts();
+            HashMap<Axial, Integer> attackable = movementOverlay.attackableCosts();
 
             for (Map.Entry<Axial, Hex> entry : hexMap.entrySet()) {
 
@@ -72,14 +73,14 @@ public class MovementOverlayRenderer implements Renderer {
                 if (currentHex.getQ() == currentSelection.axial().q()
                         && currentHex.getR() == currentSelection.axial().r()) {
                     continue;
+                } else if (attackable.containsKey(currentAxial)) {
+                    hexFillColor.set(Color.RED);
+                    hexFillColor.a = 0.5f;
+                    shapeRenderer.setColor(hexFillColor);
+                    HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,
+                            GameConstants.HEX_Y_SCALE);
                 } else if (reachableCosts.containsKey(currentAxial)) {
-
-                    if (battleField.unitAt(currentAxial) != null) {
-                        hexFillColor.set(Color.RED);
-                        shapeRenderer.setColor(hexFillColor);
-                    } else {
-                        hexFillColor.set(Color.LIGHT_GRAY);
-                    }
+                    hexFillColor.set(Color.LIGHT_GRAY);
                     hexFillColor.a = 0.5f;
                     shapeRenderer.setColor(hexFillColor);
                     HexUtils.fillHex(shapeRenderer, currentPixelPosition, GameConstants.HEX_SIZE,

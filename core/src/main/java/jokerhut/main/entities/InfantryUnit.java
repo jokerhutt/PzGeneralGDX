@@ -15,6 +15,7 @@ public class InfantryUnit extends AbstractUnit {
         setSprite(sprite);
         setStartingMovementPoints(2);
         setMovementPoints(this.getStartingMovementPoints());
+        setMaxHealth(10f);
         setHealth(10f);
         setDefense(2f);
         setSoftAttack(3f);

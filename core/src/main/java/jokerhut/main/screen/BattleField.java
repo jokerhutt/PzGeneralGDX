@@ -11,6 +11,7 @@ import jokerhut.main.DTs.Axial;
 import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.entities.ArmoredUnit;
 import jokerhut.main.entities.InfantryUnit;
+import jokerhut.main.enums.AttackResult;
 import jokerhut.main.enums.Faction;
 
 public class BattleField {
@@ -31,8 +32,9 @@ public class BattleField {
 
         Axial oldPosition = unit.getPosition();
 
-        if (occupiedHexes.containsKey(newPosition))
+        if (occupiedHexes.containsKey(newPosition)) {
             return false;
+        }
 
         occupiedHexes.remove(oldPosition);
         unit.setPosition(newPosition);
@@ -40,6 +42,63 @@ public class BattleField {
         occupiedHexes.put(newPosition, unit);
 
         return true;
+
+    }
+
+    public AttackResult attackUnit(AbstractUnit attackerUnit, Axial targetPosition, Integer newMovePoints) {
+        AbstractUnit defendingUnit = unitAt(targetPosition);
+
+        float attackerHealth = attackerUnit.getHealth();
+        float defenderHealth = defendingUnit.getHealth();
+
+        float attackerDefence = attackerUnit.getDefense();
+        float defenderDefence = defendingUnit.getDefense();
+
+        float attackerAttack = attackerUnit.getSoftAttack();
+        float defenderAttack = defendingUnit.getSoftAttack();
+
+        float newAttackerHealth = attackerHealth - (defenderAttack - attackerDefence / 2f);
+        float newDefenderHealth = defenderHealth - (attackerAttack - defenderDefence);
+
+        System.out.println("newAttackerHealth: " + attackerHealth + " - " + "(" + defenderAttack + " + "
+                + attackerDefence + " / " + "2" + ") = " + newAttackerHealth);
+
+        System.out.println("newDefenderHealth: " + defenderHealth + " - " + "(" + attackerAttack + " + "
+                + defenderDefence + ") = " + newDefenderHealth);
+        System.out.println("New Defender Health: " + newDefenderHealth + "New Attacker Health: " + newAttackerHealth);
+
+        attackerUnit.setHealth(newAttackerHealth);
+        defendingUnit.setHealth(newDefenderHealth);
+
+        if (defendingUnit.getHealth() <= 0) {
+            if (defendingUnit.getFaction() == Faction.GERMAN) {
+                axisPlayer.getUnits().remove(defendingUnit);
+            } else {
+                alliedPlayer.getUnits().remove(defendingUnit);
+            }
+            occupiedHexes.remove(targetPosition);
+            moveUnit(attackerUnit, targetPosition, newMovePoints);
+            return AttackResult.FULLVICTORY;
+        } else if (attackerUnit.getHealth() <= 0) {
+            if (attackerUnit.getFaction() == Faction.GERMAN) {
+                axisPlayer.getUnits().remove(attackerUnit);
+            } else {
+                alliedPlayer.getUnits().remove(attackerUnit);
+                occupiedHexes.remove(attackerUnit.getPosition());
+            }
+            return AttackResult.FULLDEFEAT;
+        } else {
+
+            float attackerHealthDifference = attackerHealth - newAttackerHealth;
+            float defenderHealthDifference = defenderHealth - newDefenderHealth;
+            attackerUnit.setMovementPoints(newMovePoints);
+
+            if (attackerHealthDifference >= defenderHealthDifference) {
+                return AttackResult.VICTORY;
+            } else {
+                return AttackResult.DEFEAT;
+            }
+        }
 
     }
 

@@ -66,7 +66,7 @@ public class SidebarStage extends Stage {
             }
         });
 
-        sidebar.add(endTurnButton).height(32).pad(8).row();
+        sidebar.add(endTurnButton).height(32).pad(8).padBottom(40).row();
 
         layoutSidebar();
 

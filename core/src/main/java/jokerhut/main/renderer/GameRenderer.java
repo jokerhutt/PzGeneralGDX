@@ -44,10 +44,11 @@ public class GameRenderer implements Renderer {
         hexmapRenderer.setView(camera);
         hexmapRenderer.render();
 
+        // movement overlay
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        movementOverlayRenderer.render(); // draws selected hex + reachable cells
+        movementOverlayRenderer.render();
         shapeRenderer.end();
 
         // outlines

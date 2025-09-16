@@ -25,6 +25,7 @@ public class MovementService {
 
         HashMap<Axial, Integer> cost = new HashMap<>();
         HashMap<Axial, Axial> parent = new HashMap<>();
+        HashMap<Axial, Integer> attackable = new HashMap<>();
 
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(node -> node.cost));
 
@@ -48,6 +49,13 @@ public class MovementService {
 
                     if (battleField.unitAt(neighborDirection).getFaction() == playerFaction) {
                         continue;
+                    } else {
+                        int attackCost = currentNode.cost + hexMap.get(neighborDirection).getMoveCost() + 1;
+                        if (attackCost <= movementPointsLeft) {
+
+                            attackable.put(neighborDirection, attackCost);
+                        }
+                        continue;
                     }
 
                 }
@@ -68,7 +76,7 @@ public class MovementService {
             }
         }
 
-        return new MovementOverlay(startCoordinate, movementPointsLeft, cost, parent);
+        return new MovementOverlay(startCoordinate, movementPointsLeft, cost, attackable, parent);
     }
 
 }

@@ -7,6 +7,7 @@ import jokerhut.main.DTs.ClickEvent;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
+import jokerhut.main.enums.AttackResult;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.SelectionType;
 import jokerhut.main.screen.BattleField;
@@ -49,10 +50,12 @@ public class SelectionState implements SelectionListener {
             }
 
             this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
+
         } else if (this.current != null && this.movementOverlay != null
                 && clickEvent.selectionType() == SelectionType.MOUSEACTION) {
             Axial newIntendedPosition = clickEvent.axial();
             HashMap<Axial, Integer> reachableHexes = movementOverlay.reachableCosts();
+            HashMap<Axial, Integer> attackable = movementOverlay.attackableCosts();
 
             if (reachableHexes.containsKey(newIntendedPosition)) {
                 Integer currentMovementPoints = current.unit().getMovementPoints();
@@ -70,6 +73,33 @@ public class SelectionState implements SelectionListener {
                     }
 
                 }
+            } else if (attackable.containsKey(newIntendedPosition)) {
+
+                Integer currentMovementPoints = current.unit().getMovementPoints();
+                Integer costForMovementAndAttack = attackable.get(newIntendedPosition);
+                if (costForMovementAndAttack == null) {
+                    return;
+                }
+
+                Integer newPointsAfterAttack = currentMovementPoints - costForMovementAndAttack;
+
+                if (newPointsAfterAttack >= 0) {
+                    AttackResult result = battleFieldContext.attackUnit(current.unit(), newIntendedPosition,
+                            newPointsAfterAttack);
+
+                    switch (result) {
+                        case FULLDEFEAT -> this.clear();
+                        case FULLVICTORY -> {
+                            this.current = new Selection(clickEvent.axial(), clickEvent.hex(), current.unit());
+                            this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+                                    current.unit().getMovementPoints(),
+                                    gameMapContext, battleFieldContext, playerFaction);
+                        }
+                        default -> System.out.println("Hello world");
+                    }
+
+                }
+
             }
 
         }

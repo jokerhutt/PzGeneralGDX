@@ -14,6 +14,8 @@ public record MovementOverlay(
         // Movement costs of all reachable Hexes
         HashMap<Axial, Integer> reachableCosts,
 
+        HashMap<Axial, Integer> attackableCosts,
+
         // Breadcrumb trail for units (Mostly for AI, will not use much for now)
         HashMap<Axial, Axial> parent) {
 

@@ -1,5 +1,6 @@
 package jokerhut.main.entities;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -8,11 +9,13 @@ import jokerhut.main.DTs.Axial;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.UnitType;
+import jokerhut.main.renderer.Gfx;
 import jokerhut.main.utils.HexUtils;
 
 public abstract class AbstractUnit {
 
     private float health;
+    private float maxHealth;
     private float defense;
     private float softAttack;
     private float hardAttack;
@@ -22,6 +25,7 @@ public abstract class AbstractUnit {
     private Integer movementPoints;
     private Integer startingMovementPoints;
     private Faction faction;
+    private float fuelCount;
 
     private TextureRegion sprite;
 
@@ -32,6 +36,44 @@ public abstract class AbstractUnit {
                 pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
                 GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
 
+        float x = pixelCoordinates.x - GameConstants.HEX_WIDTH / 2f;
+        float y = pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2f;
+
+        drawHpBar(batch, x, y - 6f, GameConstants.HEX_WIDTH, this.getHealth(), this.getMaxHealth());
+
+    }
+
+    private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
+            float hp, float maxHp) {
+        float pad = 6f;
+        float w = spriteW - pad * 2f;
+        float h = 4f;
+        float bx = x + pad;
+        float by = y;
+
+        float pct = Math.max(0f, Math.min(1f, hp / (float) maxHp));
+
+        Color prev = batch.getColor();
+
+        // background
+        batch.setColor(0f, 0f, 0f, 0.6f);
+        batch.draw(Gfx.PIXEL, bx, by, w, h);
+
+        // fill (green→yellow→red)
+        // simple 2-stop lerp: red to green
+        float r = (1f - pct);
+        float g = pct;
+        batch.setColor(r, g, 0f, 1f);
+        batch.draw(Gfx.PIXEL, bx + 1, by + 1, (w - 2) * pct, h - 2);
+
+        // optional border
+        batch.setColor(1f, 1f, 1f, 0.8f);
+        batch.draw(Gfx.PIXEL, bx, by, w, 1); // top
+        batch.draw(Gfx.PIXEL, bx, by + h - 1, w, 1); // bottom
+        batch.draw(Gfx.PIXEL, bx, by, 1, h); // left
+        batch.draw(Gfx.PIXEL, bx + w - 1, by, 1, h); // right
+
+        batch.setColor(prev);
     }
 
     public float getHealth() {
@@ -120,6 +162,22 @@ public abstract class AbstractUnit {
 
     public void setFaction(Faction faction) {
         this.faction = faction;
+    }
+
+    public float getFuelCount() {
+        return fuelCount;
+    }
+
+    public void setFuelCount(float fuelCount) {
+        this.fuelCount = fuelCount;
+    }
+
+    public float getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(float maxHealth) {
+        this.maxHealth = maxHealth;
     }
 
 }

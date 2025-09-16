@@ -16,7 +16,8 @@ public class ArmoredUnit extends AbstractUnit {
         setSprite(sprite);
         setStartingMovementPoints(4);
         setMovementPoints(this.getStartingMovementPoints());
-        setHealth(20f);
+        setMaxHealth(20f);
+        setHealth(10f);
         setDefense(3f);
         setSoftAttack(4f);
         setHardAttack(4f);
