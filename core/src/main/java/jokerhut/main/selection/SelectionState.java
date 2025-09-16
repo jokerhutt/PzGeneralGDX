@@ -13,6 +13,7 @@ import jokerhut.main.enums.SelectionType;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.screen.TurnManager;
 import jokerhut.main.service.MovementService;
+import jokerhut.main.sound.SoundManager;
 
 public class SelectionState implements SelectionListener {
 
@@ -23,11 +24,14 @@ public class SelectionState implements SelectionListener {
     private BattleField battleFieldContext;
     private TurnManager turnManagerContext;
 
+    private SoundManager soundManager;
+
     public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext,
-            TurnManager turnManagerContext) {
+            TurnManager turnManagerContext, SoundManager soundManager) {
         this.gameMapContext = gameMapContext;
         this.battleFieldContext = battleFieldContext;
         this.turnManagerContext = turnManagerContext;
+        this.soundManager = soundManager;
     }
 
     public void onSelect(ClickEvent clickEvent) {
@@ -51,6 +55,8 @@ public class SelectionState implements SelectionListener {
 
             this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
 
+            soundManager.leftClickSound.play();
+
         } else if (this.current != null && this.movementOverlay != null
                 && clickEvent.selectionType() == SelectionType.MOUSEACTION) {
             Axial newIntendedPosition = clickEvent.axial();
@@ -70,6 +76,8 @@ public class SelectionState implements SelectionListener {
                         this.movementOverlay = MovementService.compute(current.unit().getPosition(),
                                 current.unit().getMovementPoints(),
                                 gameMapContext, battleFieldContext, playerFaction);
+
+                        soundManager.rightClickSuccesSound.play();
                     }
 
                 }
@@ -98,8 +106,12 @@ public class SelectionState implements SelectionListener {
                         default -> System.out.println("Hello world");
                     }
 
+                    soundManager.rightClickSuccesSound.play();
+
                 }
 
+            } else {
+                soundManager.rightClickInvalidsound.play();
             }
 
         }

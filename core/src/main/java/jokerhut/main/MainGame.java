@@ -33,6 +33,7 @@ import jokerhut.main.screen.PlayerState;
 import jokerhut.main.screen.TurnManager;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
+import jokerhut.main.sound.SoundManager;
 import jokerhut.main.stage.SidebarStage;
 import jokerhut.main.utils.HexDebugUtils;
 import jokerhut.main.utils.TerrainUtils;
@@ -70,6 +71,9 @@ public class MainGame extends ApplicationAdapter {
     // ----- RENDER STUFF ----- //
     private GameRenderer gameRenderer;
 
+    // ----- AUDIO STUFF ----- //
+    private SoundManager soundManager;
+
     @Override
     public void create() {
         camera = new OrthographicCamera();
@@ -85,7 +89,8 @@ public class MainGame extends ApplicationAdapter {
         this.axisPlayer = new PlayerState(Faction.GERMAN, 500);
         this.alliedPlayer = new PlayerState(Faction.BRITISH, 500);
 
-        battleField = new BattleField(this, axisPlayer, alliedPlayer);
+        soundManager = new SoundManager();
+        battleField = new BattleField(this, axisPlayer, alliedPlayer, soundManager);
 
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
@@ -97,7 +102,7 @@ public class MainGame extends ApplicationAdapter {
         turnManager = new TurnManager(players);
         turnManager.startTurn();
 
-        selectionState = new SelectionState(hexMap, battleField, turnManager);
+        selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager);
         broadcaster.subscribe(selectionState);
 
         gameRenderer = new GameRenderer(hexmapRenderer, camera, shapeRenderer, batch, hexMap, battleField,
@@ -112,6 +117,9 @@ public class MainGame extends ApplicationAdapter {
         inputMultiplexer.addProcessor(inputProcessor);
 
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        long id = soundManager.gameTheme.play();
+        soundManager.gameTheme.setVolume(id, 0.2f);
 
     }
 

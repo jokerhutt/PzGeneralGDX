@@ -13,17 +13,22 @@ import jokerhut.main.entities.ArmoredUnit;
 import jokerhut.main.entities.InfantryUnit;
 import jokerhut.main.enums.AttackResult;
 import jokerhut.main.enums.Faction;
+import jokerhut.main.enums.UnitType;
+import jokerhut.main.sound.SoundManager;
 
 public class BattleField {
 
     private final HashMap<Axial, AbstractUnit> occupiedHexes = new HashMap<>();
     private final PlayerState axisPlayer;
     private final PlayerState alliedPlayer;
+    private SoundManager soundManager;
 
-    public BattleField(MainGame gameContext, PlayerState axisPlayer, PlayerState alliedPlayer) {
+    public BattleField(MainGame gameContext, PlayerState axisPlayer, PlayerState alliedPlayer,
+            SoundManager soundManager) {
 
         this.axisPlayer = axisPlayer;
         this.alliedPlayer = alliedPlayer;
+        this.soundManager = soundManager;
         addMockUnits();
 
     }
@@ -70,6 +75,13 @@ public class BattleField {
         attackerUnit.setHealth(newAttackerHealth);
         defendingUnit.setHealth(newDefenderHealth);
 
+        if (attackerUnit.getUnitType() == UnitType.INFANTRY && defendingUnit.getUnitType() == UnitType.INFANTRY) {
+            soundManager.infantryToInfantryCombat.play();
+        } else if (attackerUnit.getUnitType() == UnitType.LIGHT_ARMOR
+                || defendingUnit.getUnitType() == UnitType.LIGHT_ARMOR) {
+            soundManager.infantryToTankCombat.play();
+        }
+
         if (defendingUnit.getHealth() <= 0) {
             if (defendingUnit.getFaction() == Faction.GERMAN) {
                 axisPlayer.getUnits().remove(defendingUnit);
@@ -112,9 +124,13 @@ public class BattleField {
         ArmoredUnit armoredOne = new ArmoredUnit("Panzer Lehr", new Axial(18, 6),
                 new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
 
+        InfantryUnit infantryUnit = new InfantryUnit("GebirgsJager", new Axial(18, 8),
+                new TextureRegion(new Texture(Gdx.files.internal("units/GERMAN_INF.png"))), Faction.GERMAN);
+
         spawn(unitOne, new Axial(20, 10), alliedPlayer);
         spawn(unitTwo, new Axial(22, 9), alliedPlayer);
         spawn(armoredOne, new Axial(18, 6), axisPlayer);
+        spawn(infantryUnit, new Axial(18, 8), axisPlayer);
     }
 
     private void spawn(AbstractUnit unit, Axial position, PlayerState player) {

@@ -46,8 +46,8 @@ public abstract class AbstractUnit {
     private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
             float hp, float maxHp) {
         float pad = 6f;
-        float w = spriteW - pad * 2f;
-        float h = 4f;
+        float w = spriteW - pad;
+        float h = 16f;
         float bx = x + pad;
         float by = y;
 
@@ -55,23 +55,19 @@ public abstract class AbstractUnit {
 
         Color prev = batch.getColor();
 
-        // background
         batch.setColor(0f, 0f, 0f, 0.6f);
         batch.draw(Gfx.PIXEL, bx, by, w, h);
 
-        // fill (green→yellow→red)
-        // simple 2-stop lerp: red to green
         float r = (1f - pct);
         float g = pct;
         batch.setColor(r, g, 0f, 1f);
         batch.draw(Gfx.PIXEL, bx + 1, by + 1, (w - 2) * pct, h - 2);
 
-        // optional border
         batch.setColor(1f, 1f, 1f, 0.8f);
-        batch.draw(Gfx.PIXEL, bx, by, w, 1); // top
-        batch.draw(Gfx.PIXEL, bx, by + h - 1, w, 1); // bottom
-        batch.draw(Gfx.PIXEL, bx, by, 1, h); // left
-        batch.draw(Gfx.PIXEL, bx + w - 1, by, 1, h); // right
+        batch.draw(Gfx.PIXEL, bx, by, w, 1);
+        batch.draw(Gfx.PIXEL, bx, by + h - 1, w, 1);
+        batch.draw(Gfx.PIXEL, bx, by, 1, h);
+        batch.draw(Gfx.PIXEL, bx + w - 1, by, 1, h);
 
         batch.setColor(prev);
     }
