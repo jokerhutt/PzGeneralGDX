@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
@@ -21,13 +22,16 @@ public class GameRenderer implements Renderer {
     private final MovementOverlayRenderer movementOverlayRenderer;
     private final OutlineRenderer outlineRenderer;
     private final UnitRenderer unitRenderer;
+    private final HexagonalTiledMapRenderer hexmapRenderer;
 
-    public GameRenderer(OrthographicCamera camera, ShapeRenderer shapeRenderer, SpriteBatch batch,
+    public GameRenderer(HexagonalTiledMapRenderer hexmapRenderer, OrthographicCamera camera,
+            ShapeRenderer shapeRenderer, SpriteBatch batch,
             HashMap<Axial, Hex> hexMap, BattleField battleField, SelectionState selectionState, PlayerState axisPlayer,
             PlayerState alliedPlayer) {
         this.camera = camera;
         this.shapeRenderer = shapeRenderer;
         this.batch = batch;
+        this.hexmapRenderer = hexmapRenderer;
 
         this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionState, hexMap, battleField);
         this.outlineRenderer = new OutlineRenderer(shapeRenderer, hexMap);
@@ -36,10 +40,12 @@ public class GameRenderer implements Renderer {
     }
 
     public void render() {
-        // camera.update();
+
+        hexmapRenderer.setView(camera);
+        hexmapRenderer.render();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
-        // shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         movementOverlayRenderer.render(); // draws selected hex + reachable cells
         shapeRenderer.end();

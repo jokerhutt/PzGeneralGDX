@@ -100,7 +100,8 @@ public class MainGame extends ApplicationAdapter {
         selectionState = new SelectionState(hexMap, battleField, turnManager);
         broadcaster.subscribe(selectionState);
 
-        gameRenderer = new GameRenderer(camera, shapeRenderer, batch, hexMap, battleField, selectionState, axisPlayer,
+        gameRenderer = new GameRenderer(hexmapRenderer, camera, shapeRenderer, batch, hexMap, battleField,
+                selectionState, axisPlayer,
                 alliedPlayer);
 
         sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionState);
@@ -122,10 +123,6 @@ public class MainGame extends ApplicationAdapter {
         camera.position.set(32 * GameConstants.HEX_SIZE, 32 * GameConstants.HEX_SIZE, 0);
 
         camera.update();
-        hexmapRenderer.setView(camera);
-        hexmapRenderer.render();
-
-        shapeRenderer.setProjectionMatrix(camera.combined);
 
         gameRenderer.render();
 
