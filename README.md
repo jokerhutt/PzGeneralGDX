@@ -1,4 +1,4 @@
-# PzCorpsGDX
+# PzGeneralGDX
 
 This is a personal project to make a PanzerCorps 1 style game in LibGDX.
 
