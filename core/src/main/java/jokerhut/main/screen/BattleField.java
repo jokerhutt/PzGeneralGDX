@@ -108,7 +108,7 @@ public class BattleField {
                 alliedPlayer.getUnits().remove(defendingUnit);
             }
             occupiedHexes.remove(targetPosition);
-            moveUnit(attackerUnit, targetPosition, newMovePoints);
+            attackerUnit.setMovementPoints(newMovePoints);
             return AttackResult.FULLVICTORY;
         } else if (attackerUnit.getHealth() <= 0) {
             if (attackerUnit.getFaction() == Faction.GERMAN) {

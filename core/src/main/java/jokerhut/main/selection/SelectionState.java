@@ -153,8 +153,13 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
                 this.current = new Selection(unit.getPosition(),
                         gameMapContext.get(unit.getPosition()), current.unit());
                 this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-                        current.unit().getMovementPoints(),
+                        current.unit().getMovementPoints() + 1,
                         gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
+
+                List<Axial> pathToNewPosition = reconstructPath(movementOverlay.parent(), movementOverlay.start(),
+                        attackToPerform.newIntendedPosition());
+                movementSystem.move(current.unit(), pathToNewPosition);
+
             }
             default -> System.out.println("Hello world");
         }
