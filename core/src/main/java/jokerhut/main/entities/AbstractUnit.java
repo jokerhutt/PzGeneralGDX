@@ -10,7 +10,6 @@ import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.UnitType;
 import jokerhut.main.renderer.Gfx;
-import jokerhut.main.utils.HexUtils;
 
 public abstract class AbstractUnit {
 
@@ -26,21 +25,20 @@ public abstract class AbstractUnit {
     private Integer startingMovementPoints;
     private Faction faction;
     private float fuelCount;
+    private Vector2 renderPosPx = new Vector2();
 
     private TextureRegion sprite;
 
     public void render(SpriteBatch batch) {
-
-        Vector2 pixelCoordinates = HexUtils.axialToPixelCenter(this.getPosition());
-        batch.draw(this.getSprite(), pixelCoordinates.x - GameConstants.HEX_WIDTH / 2,
-                pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2,
+        Vector2 p = getRenderPosPx();
+        batch.draw(sprite,
+                p.x - GameConstants.HEX_WIDTH / 2f,
+                p.y - GameConstants.HEX_HEIGHT / 2f,
                 GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
 
-        float x = pixelCoordinates.x - GameConstants.HEX_WIDTH / 2f;
-        float y = pixelCoordinates.y - GameConstants.HEX_HEIGHT / 2f;
-
-        drawHpBar(batch, x, y - 6f, GameConstants.HEX_WIDTH, this.getHealth(), this.getMaxHealth());
-
+        float x = p.x - GameConstants.HEX_WIDTH / 2f;
+        float y = p.y - GameConstants.HEX_HEIGHT / 2f;
+        drawHpBar(batch, x, y - 6f, GameConstants.HEX_WIDTH, getHealth(), getMaxHealth());
     }
 
     private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
@@ -174,6 +172,14 @@ public abstract class AbstractUnit {
 
     public void setMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    public Vector2 getRenderPosPx() {
+        return renderPosPx;
+    }
+
+    public void setRenderPosPx(Vector2 renderPosPx) {
+        this.renderPosPx = renderPosPx;
     }
 
 }

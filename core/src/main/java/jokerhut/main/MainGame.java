@@ -31,6 +31,7 @@ import jokerhut.main.renderer.GameRenderer;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.screen.PlayerState;
 import jokerhut.main.screen.TurnManager;
+import jokerhut.main.selection.MovementSystem;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
 import jokerhut.main.sound.SoundManager;
@@ -65,6 +66,7 @@ public class MainGame extends ApplicationAdapter {
     private PlayerState alliedPlayer;
     private TurnManager turnManager;
 
+    private MovementSystem movementSystem;
     // ----- HUD STUFF ----- //
     private SidebarStage sidebarStage;
 
@@ -92,6 +94,8 @@ public class MainGame extends ApplicationAdapter {
         soundManager = new SoundManager();
         battleField = new BattleField(this, axisPlayer, alliedPlayer, soundManager);
 
+        movementSystem = new MovementSystem(battleField, 600f);
+
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
@@ -102,12 +106,12 @@ public class MainGame extends ApplicationAdapter {
         turnManager = new TurnManager(players);
         turnManager.startTurn();
 
-        selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager);
+        selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager, movementSystem);
         broadcaster.subscribe(selectionState);
 
         gameRenderer = new GameRenderer(hexmapRenderer, camera, shapeRenderer, batch, hexMap, battleField,
                 selectionState, axisPlayer,
-                alliedPlayer);
+                alliedPlayer, movementSystem);
 
         sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionState);
         inputProcessor = new InputProcessor(camera, hexMap, battleField, broadcaster, sidebarStage);
@@ -131,6 +135,9 @@ public class MainGame extends ApplicationAdapter {
         camera.position.set(32 * GameConstants.HEX_SIZE, 32 * GameConstants.HEX_SIZE, 0);
 
         camera.update();
+
+        float dt = Gdx.graphics.getDeltaTime();
+        movementSystem.updateActiveMovements(dt);
 
         gameRenderer.render();
 

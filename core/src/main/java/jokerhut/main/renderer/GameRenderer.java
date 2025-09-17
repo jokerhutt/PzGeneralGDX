@@ -13,6 +13,7 @@ import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.screen.PlayerState;
+import jokerhut.main.selection.MovementSystem;
 import jokerhut.main.selection.SelectionState;
 
 public class GameRenderer implements Renderer {
@@ -23,20 +24,22 @@ public class GameRenderer implements Renderer {
     private final OutlineRenderer outlineRenderer;
     private final UnitRenderer unitRenderer;
     private final HexagonalTiledMapRenderer hexmapRenderer;
+    private final MovementSystem movementSystem;
 
     public GameRenderer(HexagonalTiledMapRenderer hexmapRenderer, OrthographicCamera camera,
             ShapeRenderer shapeRenderer, SpriteBatch batch,
             HashMap<Axial, Hex> hexMap, BattleField battleField, SelectionState selectionState, PlayerState axisPlayer,
-            PlayerState alliedPlayer) {
+            PlayerState alliedPlayer, MovementSystem movementSystem) {
         this.camera = camera;
         this.shapeRenderer = shapeRenderer;
         this.batch = batch;
         this.hexmapRenderer = hexmapRenderer;
 
-        this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionState, hexMap, battleField);
+        this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionState, hexMap, battleField,
+                movementSystem);
         this.outlineRenderer = new OutlineRenderer(shapeRenderer, hexMap);
         this.unitRenderer = new UnitRenderer(batch, axisPlayer, alliedPlayer);
-
+        this.movementSystem = movementSystem;
     }
 
     public void render() {

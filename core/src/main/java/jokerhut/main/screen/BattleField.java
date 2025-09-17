@@ -50,6 +50,21 @@ public class BattleField {
 
     }
 
+    public void commitMove(AbstractUnit unit, Axial to) {
+        Axial from = unit.getPosition();
+        if (from.equals(to))
+            return;
+
+        AbstractUnit other = occupiedHexes.get(to);
+        if (other != null && other != unit) {
+            throw new IllegalStateException("step into occupied: " + to);
+        }
+
+        occupiedHexes.remove(from);
+        unit.setPosition(to);
+        occupiedHexes.put(to, unit);
+    }
+
     public AttackResult attackUnit(AbstractUnit attackerUnit, Axial targetPosition, Integer newMovePoints) {
         AbstractUnit defendingUnit = unitAt(targetPosition);
 
@@ -125,7 +140,8 @@ public class BattleField {
                 new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
 
         InfantryUnit infantryUnit = new InfantryUnit("GebirgsJager", new Axial(18, 8),
-                new TextureRegion(new Texture(Gdx.files.internal("units/GERMAN_INF.png"))), Faction.GERMAN);
+                new TextureRegion(new Texture(Gdx.files.internal("newAssets/bigunits/Wehrmacht_Inf.png"))),
+                Faction.GERMAN);
 
         spawn(unitOne, new Axial(20, 10), alliedPlayer);
         spawn(unitTwo, new Axial(22, 9), alliedPlayer);

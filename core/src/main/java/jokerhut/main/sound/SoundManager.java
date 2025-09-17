@@ -3,7 +3,15 @@ package jokerhut.main.sound;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
+import jokerhut.main.enums.UnitType;
+
 public class SoundManager {
+
+    private final MovementSoundManager movementSoundManager = new MovementSoundManager();
+
+    public void playMovement(UnitType unitType) {
+        movementSoundManager.playMovementSound(unitType);
+    }
 
     public Sound leftClickSound = Gdx.audio.newSound(Gdx.files.internal("audio/leftClick.ogg"));
     public Sound rightClickSuccesSound = Gdx.audio.newSound(Gdx.files.internal("audio/rightClickSuccess.ogg"));

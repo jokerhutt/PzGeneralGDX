@@ -15,6 +15,7 @@ import jokerhut.main.DTs.Selection;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.selection.MovementOverlay;
+import jokerhut.main.selection.MovementSystem;
 import jokerhut.main.selection.SelectionState;
 import jokerhut.main.utils.HexUtils;
 
@@ -23,15 +24,17 @@ public class MovementOverlayRenderer implements Renderer {
     private final ShapeRenderer shapeRenderer;
     private final SelectionState selectionState;
     private final HashMap<Axial, Hex> hexMap;
+    private final MovementSystem movementSystem;
     private final BattleField battleField;
 
     public MovementOverlayRenderer(ShapeRenderer shapeRenderer, SelectionState selectionState,
-            HashMap<Axial, Hex> hexMap, BattleField battleField) {
+            HashMap<Axial, Hex> hexMap, BattleField battleField, MovementSystem movementSystem) {
 
         this.shapeRenderer = shapeRenderer;
         this.selectionState = selectionState;
         this.hexMap = hexMap;
         this.battleField = battleField;
+        this.movementSystem = movementSystem;
 
     }
 
@@ -53,7 +56,9 @@ public class MovementOverlayRenderer implements Renderer {
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
 
-        HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
+        if (currentSelection.unit() == null || !movementSystem.isUnitMoving(currentSelection.unit())) {
+            HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
+        }
 
         MovementOverlay movementOverlay = selectionState.getMovementOverlay();
 

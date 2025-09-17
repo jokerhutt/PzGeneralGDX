@@ -28,3 +28,19 @@ public static Vector2 axialToPixelCenter(Axial axial) {
 }
 
 ```
+
+## Movement
+
+### Movement animations
+
+When a unit is selected, the MovementService computes a hashmap of all reachable tiles,
+and for each tile computes the shortest path to reach that unit.
+
+When the user right clicks a reachable tile, the path for that tile its reconstructed into a queue.
+This reconstructed path is then passed to MovementSystem, which adds the unit and a new instance of the `Motion` class to an ObjectMap tracking active motions.
+
+In each frame, the MovementSystem iterates over the ObjectMap and updates the render position of the unit.
+
+Render wise, in each frame, the unit then renders its sprite based on the render position.
+
+When a unit reaches the center of the hex it is moving towards, it is removed from the ObjectMap.

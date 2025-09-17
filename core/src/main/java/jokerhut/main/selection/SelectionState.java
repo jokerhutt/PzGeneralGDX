@@ -1,12 +1,16 @@
 package jokerhut.main.selection;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.ClickEvent;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
+import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.enums.AttackResult;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.SelectionType;
@@ -15,7 +19,7 @@ import jokerhut.main.screen.TurnManager;
 import jokerhut.main.service.MovementService;
 import jokerhut.main.sound.SoundManager;
 
-public class SelectionState implements SelectionListener {
+public class SelectionState implements SelectionListener, MovementListener {
 
     private Selection current;
     private MovementOverlay movementOverlay;
@@ -24,14 +28,18 @@ public class SelectionState implements SelectionListener {
     private BattleField battleFieldContext;
     private TurnManager turnManagerContext;
 
+    private MovementSystem movementSystem;
+
     private SoundManager soundManager;
 
     public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext,
-            TurnManager turnManagerContext, SoundManager soundManager) {
+            TurnManager turnManagerContext, SoundManager soundManager, MovementSystem movementSystem) {
         this.gameMapContext = gameMapContext;
         this.battleFieldContext = battleFieldContext;
         this.turnManagerContext = turnManagerContext;
         this.soundManager = soundManager;
+        this.movementSystem = movementSystem;
+        movementSystem.addListener(this);
     }
 
     public void onSelect(ClickEvent clickEvent) {
@@ -64,23 +72,7 @@ public class SelectionState implements SelectionListener {
             HashMap<Axial, Integer> attackable = movementOverlay.attackableCosts();
 
             if (reachableHexes.containsKey(newIntendedPosition)) {
-                Integer currentMovementPoints = current.unit().getMovementPoints();
-                Integer costForMovement = reachableHexes.get(newIntendedPosition);
-                if (costForMovement == null)
-                    return;
-                Integer newPoints = currentMovementPoints - costForMovement;
-
-                if (newPoints >= 0) {
-                    if (battleFieldContext.moveUnit(current.unit(), newIntendedPosition, newPoints)) {
-                        this.current = new Selection(clickEvent.axial(), clickEvent.hex(), current.unit());
-                        this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-                                current.unit().getMovementPoints(),
-                                gameMapContext, battleFieldContext, playerFaction);
-
-                        soundManager.rightClickSuccesSound.play();
-                    }
-
-                }
+                moveToUnoccupiedHex(reachableHexes, newIntendedPosition);
             } else if (attackable.containsKey(newIntendedPosition)) {
 
                 Integer currentMovementPoints = current.unit().getMovementPoints();
@@ -116,6 +108,96 @@ public class SelectionState implements SelectionListener {
 
         }
 
+    }
+
+    @Override
+    public void onMotionFinished(AbstractUnit unit) {
+        if (this.current.unit() == unit) {
+            this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
+            this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+                    current.unit().getMovementPoints(),
+                    gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
+        }
+    }
+
+    private void handleRightClick(ClickEvent clickEvent) {
+
+        Axial newIntendedPosition = clickEvent.axial();
+        Hex newIntendedHex = clickEvent.hex();
+        HashMap<Axial, Integer> reachableHexes = movementOverlay.reachableCosts();
+        HashMap<Axial, Integer> attackable = movementOverlay.attackableCosts();
+
+        if (reachableHexes.containsKey(newIntendedPosition)) {
+            moveToUnoccupiedHex(reachableHexes, newIntendedPosition);
+        }
+
+    }
+
+    private void attackAndPotentiallyMove(HashMap<Axial, Integer> attackable, Axial newIntendedPosition,
+            Hex newIntendedHex) {
+        Integer currentMovementPoints = current.unit().getMovementPoints();
+        Integer costForMovementAndAttack = attackable.get(newIntendedPosition);
+        if (costForMovementAndAttack == null) {
+            return;
+        }
+
+        Integer newPointsAfterAttack = currentMovementPoints - costForMovementAndAttack;
+
+        if (newPointsAfterAttack >= 0) {
+            AttackResult result = battleFieldContext.attackUnit(current.unit(), newIntendedPosition,
+                    newPointsAfterAttack);
+
+            switch (result) {
+                case FULLDEFEAT -> this.clear();
+                case FULLVICTORY -> {
+                    this.current = new Selection(newIntendedPosition, newIntendedHex, current.unit());
+                    this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+                            current.unit().getMovementPoints(),
+                            gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
+                }
+                default -> System.out.println("Hello world");
+            }
+
+            soundManager.rightClickSuccesSound.play();
+
+        }
+    }
+
+    private void moveToUnoccupiedHex(HashMap<Axial, Integer> reachableHexes, Axial newIntendedPosition) {
+
+        Integer currentMovementPoints = current.unit().getMovementPoints();
+        Integer costForMovement = reachableHexes.get(newIntendedPosition);
+
+        if (costForMovement == null) {
+            return;
+        }
+
+        Integer newPoints = currentMovementPoints - costForMovement;
+
+        if (!movementSystem.isUnitMoving(current.unit())) {
+            List<Axial> pathToNewPosition = reconstructPath(movementOverlay.parent(), movementOverlay.start(),
+                    newIntendedPosition);
+
+            soundManager.playMovement(current.unit().getUnitType());
+
+            if (!pathToNewPosition.isEmpty()) {
+                current.unit().setMovementPoints(newPoints);
+                movementSystem.move(current.unit(), pathToNewPosition);
+                this.movementOverlay = null;
+            }
+
+        }
+
+    }
+
+    private static List<Axial> reconstructPath(HashMap<Axial, Axial> parent, Axial start, Axial target) {
+        ArrayDeque<Axial> stack = new ArrayDeque<>();
+        for (Axial cur = target; !cur.equals(start); cur = parent.get(cur)) {
+            if (cur != null) {
+                stack.push(cur);
+            }
+        }
+        return new ArrayList<>(stack);
     }
 
     public void clear() {
