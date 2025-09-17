@@ -1,11 +1,14 @@
 package jokerhut.main.utils;
 
+import java.util.HashMap;
+
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.constants.GameConstants;
+import jokerhut.main.screen.BattleField;
 
 public class HexUtils {
 
@@ -31,6 +34,40 @@ public class HexUtils {
 
         return new Vector2(x, y);
 
+    }
+
+    public static Axial pickStaging(Axial target, HashMap<Axial, Integer> reachable, BattleField bf) {
+        int[][] dirs = HEX_NEIGHBORS;
+        Axial best = null;
+        int bestCost = Integer.MAX_VALUE;
+        for (int[] d : dirs) {
+            Axial n = new Axial(target.q() + d[0], target.r() + d[1]);
+            Integer c = reachable.get(n);
+            if (c == null)
+                continue; // not reachable
+            if (bf.unitAt(n) != null)
+                continue; // occupied
+            if (c < bestCost) {
+                best = n;
+                bestCost = c;
+            }
+        }
+        return best;
+    }
+
+    public static final int[][] HEX_NEIGHBORS = {
+            { 1, 0 }, { 1, -1 }, { 0, -1 },
+            { -1, 0 }, { -1, 1 }, { 0, 1 }
+    };
+
+    public static boolean areNeighbors(Axial a, Axial b) {
+        int dq = b.q() - a.q();
+        int dr = b.r() - a.r();
+        for (int[] dir : HEX_NEIGHBORS) {
+            if (dq == dir[0] && dr == dir[1])
+                return true;
+        }
+        return false;
     }
 
     public static Axial pixelToNearestAxial(float px, float py, float size) {

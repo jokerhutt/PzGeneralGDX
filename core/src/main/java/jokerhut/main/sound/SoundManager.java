@@ -18,7 +18,7 @@ public class SoundManager {
     public Sound rightClickInvalidsound = Gdx.audio.newSound(Gdx.files.internal("audio/rightClickFailTwo.ogg"));
 
     public Sound infantryToInfantryCombat = Gdx.audio.newSound(Gdx.files.internal("audio/INF_INF_COMBAT.ogg"));
-    public Sound infantryToTankCombat = Gdx.audio.newSound(Gdx.files.internal("audio/INF_TANK_COMBAT.ogg"));
+    public Sound infantryToTankCombat = Gdx.audio.newSound(Gdx.files.internal("audio/armour_attack_0.wav"));
     public Sound gameTheme = Gdx.audio.newSound(Gdx.files.internal("audio/gameTheme.ogg"));
 
 }
