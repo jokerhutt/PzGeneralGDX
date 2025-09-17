@@ -15,22 +15,26 @@ public class Effect {
     private float timeElapsed = 0f;
     private boolean loop = false;
     private float maxDuration = -1f;
+    private Vector2 offset = new Vector2();
 
-    public Effect set(Animation<TextureRegion> a, Vector2 at, boolean loop, float maxDuration) {
+    public Effect set(Animation<TextureRegion> a, Vector2 at, boolean loop, float maxDuration, Vector2 offset) {
         animation = a;
-        pos.set(at);
+        pos.set(at).add(offset);
         anchorPosition = null;
         timeElapsed = 0;
         this.loop = loop;
+        this.offset.set(offset);
         this.maxDuration = maxDuration;
         return this;
     }
 
-    public Effect setAnchored(Animation<TextureRegion> animation, AbstractUnit unit, boolean loop, float maxDuration) {
+    public Effect setAnchored(Animation<TextureRegion> animation, AbstractUnit unit, boolean loop, float maxDuration,
+            Vector2 offset) {
         this.animation = animation;
         anchorPosition = unit;
         timeElapsed = 0;
         this.loop = loop;
+        this.offset.set(offset);
         this.maxDuration = maxDuration;
         return this;
     }
@@ -39,7 +43,7 @@ public class Effect {
         timeElapsed += dt;
 
         if (anchorPosition != null) {
-            pos.set(anchorPosition.getRenderPosPx()).add(anchorPosition.getActionOffset());
+            pos.set(anchorPosition.getRenderPosPx()).add(offset);
         }
 
         if (maxDuration > 0f && timeElapsed >= maxDuration)
@@ -54,14 +58,6 @@ public class Effect {
     public void render(SpriteBatch b) {
         TextureRegion f = animation.getKeyFrame(timeElapsed, loop);
         b.draw(f, pos.x - f.getRegionWidth() / 2f, pos.y - f.getRegionHeight() / 2f);
-    }
-
-    public Vector2 getPos() {
-        return pos;
-    }
-
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
     }
 
     public AbstractUnit getAnchorPosition() {
@@ -95,5 +91,13 @@ public class Effect {
     public void setLoop(boolean loop) {
         this.loop = loop;
     }
+
+    public Vector2 getPos() {
+        return pos;
+    }
+
+    public void setPos(Vector2 p) {
+        this.pos.set(p);
+    } // do not assign the reference
 
 }

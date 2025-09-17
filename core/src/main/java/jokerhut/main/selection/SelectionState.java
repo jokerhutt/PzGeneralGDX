@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import jokerhut.main.DTs.Axial;
@@ -106,8 +107,12 @@ public class SelectionState implements SelectionListener, MovementListener {
         AttackResult result = battleFieldContext.attackUnit(current.unit(), attackToPerform.newIntendedPosition(),
                 attackToPerform.mpAfter());
 
-        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryActionAnimation(),
-                current.unit(), 2f);
+        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantrySmgAnimation(),
+                current.unit(), 2f, new Vector2(12f, 6f));
+        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimation(),
+                current.unit(), 2f, new Vector2(0f, -8f));
+        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimationTwo(),
+                current.unit(), 2f, new Vector2(-40f, 10f));
 
         switch (result) {
             case FULLDEFEAT -> this.clear();

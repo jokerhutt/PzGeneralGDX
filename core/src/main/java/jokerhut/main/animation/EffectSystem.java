@@ -20,28 +20,28 @@ public class EffectSystem {
 
     private AnimationHandler animationHandler = new AnimationHandler();
 
-    public void spawn(Animation<TextureRegion> anim, Vector2 at) {
-        active.add(pool.obtain().set(anim, at, false, -1));
+    public void spawn(Animation<TextureRegion> anim, Vector2 at, Vector2 offset) {
+        active.add(pool.obtain().set(anim, at, false, -1, offset));
     }
 
-    public Effect spawnLoop(Animation<TextureRegion> anim, Vector2 at) {
-        Effect e = pool.obtain().set(anim, at, true, -1);
+    public Effect spawnLoop(Animation<TextureRegion> anim, Vector2 at, Vector2 offset) {
+        Effect e = pool.obtain().set(anim, at, true, -1, offset);
         active.add(e);
         return e;
     }
 
-    public void spawnAnchored(Animation<TextureRegion> anim, AbstractUnit u) {
-        active.add(pool.obtain().setAnchored(anim, u, false, -1));
+    public void spawnAnchored(Animation<TextureRegion> anim, AbstractUnit u, Vector2 offset) {
+        active.add(pool.obtain().setAnchored(anim, u, false, -1, offset));
     }
 
-    public Effect spawnAnchoredLoop(Animation<TextureRegion> anim, AbstractUnit u) {
-        Effect e = pool.obtain().setAnchored(anim, u, true, -1);
+    public Effect spawnAnchoredLoop(Animation<TextureRegion> anim, AbstractUnit u, Vector2 offset) {
+        Effect e = pool.obtain().setAnchored(anim, u, true, -1, offset);
         active.add(e);
         return e;
     }
 
-    public void spawnAnchoredTimed(Animation<TextureRegion> anim, AbstractUnit u, float seconds) {
-        active.add(pool.obtain().setAnchored(anim, u, true, seconds));
+    public void spawnAnchoredTimed(Animation<TextureRegion> anim, AbstractUnit u, float seconds, Vector2 offset) {
+        active.add(pool.obtain().setAnchored(anim, u, true, seconds, offset));
     }
 
     public void update(float dt) {
