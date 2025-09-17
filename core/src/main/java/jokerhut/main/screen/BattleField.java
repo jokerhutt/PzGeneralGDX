@@ -65,6 +65,17 @@ public class BattleField {
         occupiedHexes.put(to, unit);
     }
 
+    public void playUnitSounds(AbstractUnit attackerUnit, Axial targetPosition) {
+        AbstractUnit defendingUnit = unitAt(targetPosition);
+        if (attackerUnit.getUnitType() == UnitType.INFANTRY && defendingUnit.getUnitType() == UnitType.INFANTRY) {
+            soundManager.infantryToInfantryCombat.play();
+        } else if (attackerUnit.getUnitType() == UnitType.LIGHT_ARMOR
+                || defendingUnit.getUnitType() == UnitType.LIGHT_ARMOR) {
+            soundManager.infantryToInfantryCombat.play();
+            soundManager.infantryToTankCombat.play();
+        }
+    }
+
     public AttackResult attackUnit(AbstractUnit attackerUnit, Axial targetPosition, Integer newMovePoints) {
         AbstractUnit defendingUnit = unitAt(targetPosition);
 
@@ -89,13 +100,6 @@ public class BattleField {
 
         attackerUnit.setHealth(newAttackerHealth);
         defendingUnit.setHealth(newDefenderHealth);
-
-        if (attackerUnit.getUnitType() == UnitType.INFANTRY && defendingUnit.getUnitType() == UnitType.INFANTRY) {
-            soundManager.infantryToInfantryCombat.play();
-        } else if (attackerUnit.getUnitType() == UnitType.LIGHT_ARMOR
-                || defendingUnit.getUnitType() == UnitType.LIGHT_ARMOR) {
-            soundManager.infantryToTankCombat.play();
-        }
 
         if (defendingUnit.getHealth() <= 0) {
             if (defendingUnit.getFaction() == Faction.GERMAN) {

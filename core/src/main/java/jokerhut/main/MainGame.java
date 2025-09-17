@@ -31,6 +31,7 @@ import jokerhut.main.renderer.GameRenderer;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.screen.PlayerState;
 import jokerhut.main.screen.TurnManager;
+import jokerhut.main.selection.CombatSystem;
 import jokerhut.main.selection.MovementSystem;
 import jokerhut.main.selection.SelectionBroadcaster;
 import jokerhut.main.selection.SelectionState;
@@ -67,6 +68,7 @@ public class MainGame extends ApplicationAdapter {
     private TurnManager turnManager;
 
     private MovementSystem movementSystem;
+    private CombatSystem combatSystem;
     // ----- HUD STUFF ----- //
     private SidebarStage sidebarStage;
 
@@ -108,8 +110,10 @@ public class MainGame extends ApplicationAdapter {
         turnManager = new TurnManager(players);
         turnManager.startTurn();
 
+        this.combatSystem = new CombatSystem(battleField);
+
         selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager, movementSystem,
-                effectSystem);
+                effectSystem, combatSystem);
         broadcaster.subscribe(selectionState);
 
         gameRenderer = new GameRenderer(hexmapRenderer, camera, shapeRenderer, batch, hexMap, battleField,
@@ -126,7 +130,7 @@ public class MainGame extends ApplicationAdapter {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         long id = soundManager.gameTheme.play();
-        soundManager.gameTheme.setVolume(id, 0.2f);
+        soundManager.gameTheme.setVolume(id, 0f);
 
     }
 
@@ -141,7 +145,7 @@ public class MainGame extends ApplicationAdapter {
 
         float dt = Gdx.graphics.getDeltaTime();
         movementSystem.updateActiveMovements(dt);
-
+        combatSystem.updateAttackTimer(dt);
         effectSystem.update(dt);
 
         gameRenderer.render();

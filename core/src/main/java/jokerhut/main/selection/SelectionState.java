@@ -25,7 +25,7 @@ import jokerhut.main.service.PendingAttack;
 import jokerhut.main.sound.SoundManager;
 import jokerhut.main.utils.HexUtils;
 
-public class SelectionState implements SelectionListener, MovementListener {
+public class SelectionState implements SelectionListener, MovementListener, CombatListener {
 
     private Selection current;
     private MovementOverlay movementOverlay;
@@ -34,6 +34,7 @@ public class SelectionState implements SelectionListener, MovementListener {
     private BattleField battleFieldContext;
     private TurnManager turnManagerContext;
     private EffectSystem effectSystem;
+    private CombatSystem combatSystem;
 
     private MovementSystem movementSystem;
 
@@ -42,14 +43,16 @@ public class SelectionState implements SelectionListener, MovementListener {
 
     public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext,
             TurnManager turnManagerContext, SoundManager soundManager, MovementSystem movementSystem,
-            EffectSystem effectSystem) {
+            EffectSystem effectSystem, CombatSystem combatSystem) {
         this.gameMapContext = gameMapContext;
         this.effectSystem = effectSystem;
         this.battleFieldContext = battleFieldContext;
         this.turnManagerContext = turnManagerContext;
         this.soundManager = soundManager;
         this.movementSystem = movementSystem;
+        this.combatSystem = combatSystem;
         movementSystem.addListener(this);
+        combatSystem.addListener(this);
     }
 
     public void onSelect(ClickEvent clickEvent) {
@@ -96,23 +99,53 @@ public class SelectionState implements SelectionListener, MovementListener {
 
         if (pendingAttacks.containsKey(unit)) {
             PendingAttack attackToPerform = pendingAttacks.get(unit);
-            handleAttack(unit, attackToPerform);
-            pendingAttacks.remove(unit);
+            prepareAtttack(unit, attackToPerform);
         }
+
+    }
+
+    @Override
+    public void onCombatFinished(AbstractUnit attacker) {
+        PendingAttack attackToPerform = pendingAttacks.get(attacker);
+        handleAttack(attacker, attackToPerform);
+        pendingAttacks.remove(attacker);
+
+    }
+
+    private void prepareAtttack(AbstractUnit unit, PendingAttack attackToPerform) {
+        AbstractUnit enemyUnit = battleFieldContext.unitAt(attackToPerform.newIntendedPosition());
+        if (current.unit() != null) {
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantrySmgAnimation(),
+                    current.unit(), 2f, new Vector2(12f, 6f));
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimation(),
+                    current.unit(), 2f, new Vector2(0f, -8f));
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimationTwo(),
+                    current.unit(), 2f, new Vector2(-40f, 10f));
+        }
+
+        if (enemyUnit != null) {
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantrySmgAnimation(),
+                    enemyUnit, 2f, new Vector2(12f, 6f));
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimation(),
+                    enemyUnit, 2f, new Vector2(0f, -8f));
+            effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimationTwo(),
+                    enemyUnit, 2f, new Vector2(-40f, 10f));
+        }
+
+        battleFieldContext.playUnitSounds(unit, attackToPerform.newIntendedPosition());
+
+        System.out.println("STARTING ATTACK");
+        combatSystem.startAttackTimer(unit);
 
     }
 
     private void handleAttack(AbstractUnit unit, PendingAttack attackToPerform) {
 
-        AttackResult result = battleFieldContext.attackUnit(current.unit(), attackToPerform.newIntendedPosition(),
+        System.out.println("ATTACK TIMER FINISHED");
+        AttackResult result = battleFieldContext.attackUnit(unit, attackToPerform.newIntendedPosition(),
                 attackToPerform.mpAfter());
 
-        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantrySmgAnimation(),
-                current.unit(), 2f, new Vector2(12f, 6f));
-        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimation(),
-                current.unit(), 2f, new Vector2(0f, -8f));
-        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryBoltActionAnimationTwo(),
-                current.unit(), 2f, new Vector2(-40f, 10f));
+        System.out.println("ATTACK FINISHED");
 
         switch (result) {
             case FULLDEFEAT -> this.clear();
@@ -156,9 +189,11 @@ public class SelectionState implements SelectionListener, MovementListener {
 
         if (newPointsAfterAttack >= 0) {
 
-            if (HexUtils.areNeighbors(current.unit().getPosition(), newIntendedPosition)) {
+            if (HexUtils.areNeighbors(current.unit().getPosition(), newIntendedPosition)
+                    && !combatSystem.isUnitAttacking(current.unit())) {
                 PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack);
-                handleAttack(current.unit(), attackToPerform);
+                pendingAttacks.put(current.unit(), attackToPerform);
+                prepareAtttack(current.unit(), attackToPerform);
             } else {
 
                 Axial nearestEmptyHexToMoveTo = HexUtils.pickStaging(newIntendedPosition,
@@ -170,7 +205,7 @@ public class SelectionState implements SelectionListener, MovementListener {
                 List<Axial> pathToNewPosition = reconstructPath(movementOverlay.parent(), movementOverlay.start(),
                         nearestEmptyHexToMoveTo);
 
-                if (!movementSystem.isUnitMoving(current.unit())) {
+                if (!movementSystem.isUnitMoving(current.unit()) && !combatSystem.isUnitAttacking(current.unit())) {
 
                     pendingAttacks.put(current.unit(), new PendingAttack(newIntendedPosition, newPointsAfterAttack));
 

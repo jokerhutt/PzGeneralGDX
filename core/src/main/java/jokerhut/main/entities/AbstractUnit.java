@@ -38,14 +38,20 @@ public abstract class AbstractUnit {
 
         float x = p.x - GameConstants.HEX_WIDTH / 2f;
         float y = p.y - GameConstants.HEX_HEIGHT / 2f;
-        drawHpBar(batch, x, y - 6f, GameConstants.HEX_WIDTH, getHealth(), getMaxHealth());
+        if (!isFullHealth()) {
+            drawHpBar(batch, x, y - 3f, GameConstants.HEX_WIDTH, getHealth(), getMaxHealth());
+        }
+    }
+
+    private boolean isFullHealth() {
+        return this.health == maxHealth;
     }
 
     private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
             float hp, float maxHp) {
         float pad = 30f;
-        float w = spriteW - pad;
-        float h = 16f;
+        float w = spriteW - pad * 2;
+        float h = 10f;
         float bx = x + pad;
         float by = y;
 
