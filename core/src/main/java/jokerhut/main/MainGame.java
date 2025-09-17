@@ -23,6 +23,7 @@ import jokerhut.main.DTs.Axial;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.TerrainProps;
+import jokerhut.main.animation.EffectSystem;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.Faction;
 import jokerhut.main.enums.HexDebugType;
@@ -72,6 +73,7 @@ public class MainGame extends ApplicationAdapter {
 
     // ----- RENDER STUFF ----- //
     private GameRenderer gameRenderer;
+    private EffectSystem effectSystem;
 
     // ----- AUDIO STUFF ----- //
     private SoundManager soundManager;
@@ -95,6 +97,7 @@ public class MainGame extends ApplicationAdapter {
         battleField = new BattleField(this, axisPlayer, alliedPlayer, soundManager);
 
         movementSystem = new MovementSystem(battleField, 600f);
+        effectSystem = new EffectSystem();
 
         int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
@@ -106,7 +109,8 @@ public class MainGame extends ApplicationAdapter {
         turnManager = new TurnManager(players);
         turnManager.startTurn();
 
-        selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager, movementSystem);
+        selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager, movementSystem,
+                effectSystem);
         broadcaster.subscribe(selectionState);
 
         gameRenderer = new GameRenderer(hexmapRenderer, camera, shapeRenderer, batch, hexMap, battleField,
@@ -139,6 +143,8 @@ public class MainGame extends ApplicationAdapter {
         float dt = Gdx.graphics.getDeltaTime();
         movementSystem.updateActiveMovements(dt);
 
+        effectSystem.update(dt);
+
         gameRenderer.render();
 
         Selection currentSelection = selectionState.getCurrentSelection();
@@ -148,6 +154,7 @@ public class MainGame extends ApplicationAdapter {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        effectSystem.render(batch);
         HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
         batch.end();
 

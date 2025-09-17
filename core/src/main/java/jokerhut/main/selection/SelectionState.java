@@ -12,6 +12,7 @@ import jokerhut.main.DTs.ClickEvent;
 import jokerhut.main.DTs.Hex;
 import jokerhut.main.DTs.Selection;
 import jokerhut.main.DTs.SelectionListener;
+import jokerhut.main.animation.EffectSystem;
 import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.enums.AttackResult;
 import jokerhut.main.enums.Faction;
@@ -31,6 +32,7 @@ public class SelectionState implements SelectionListener, MovementListener {
     private HashMap<Axial, Hex> gameMapContext;
     private BattleField battleFieldContext;
     private TurnManager turnManagerContext;
+    private EffectSystem effectSystem;
 
     private MovementSystem movementSystem;
 
@@ -38,8 +40,10 @@ public class SelectionState implements SelectionListener, MovementListener {
     private ObjectMap<AbstractUnit, PendingAttack> pendingAttacks = new ObjectMap<>();
 
     public SelectionState(HashMap<Axial, Hex> gameMapContext, BattleField battleFieldContext,
-            TurnManager turnManagerContext, SoundManager soundManager, MovementSystem movementSystem) {
+            TurnManager turnManagerContext, SoundManager soundManager, MovementSystem movementSystem,
+            EffectSystem effectSystem) {
         this.gameMapContext = gameMapContext;
+        this.effectSystem = effectSystem;
         this.battleFieldContext = battleFieldContext;
         this.turnManagerContext = turnManagerContext;
         this.soundManager = soundManager;
@@ -101,6 +105,9 @@ public class SelectionState implements SelectionListener, MovementListener {
 
         AttackResult result = battleFieldContext.attackUnit(current.unit(), attackToPerform.newIntendedPosition(),
                 attackToPerform.mpAfter());
+
+        effectSystem.spawnAnchoredTimed(effectSystem.getAnimationHandler().getInfantryActionAnimation(),
+                current.unit(), 2f);
 
         switch (result) {
             case FULLDEFEAT -> this.clear();

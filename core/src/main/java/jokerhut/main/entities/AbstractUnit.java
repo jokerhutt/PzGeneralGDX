@@ -26,6 +26,7 @@ public abstract class AbstractUnit {
     private Faction faction;
     private float fuelCount;
     private Vector2 renderPosPx = new Vector2();
+    private final Vector2 actionOffset = new Vector2(12f, 6f);
 
     private TextureRegion sprite;
 
@@ -43,7 +44,7 @@ public abstract class AbstractUnit {
 
     private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
             float hp, float maxHp) {
-        float pad = 6f;
+        float pad = 30f;
         float w = spriteW - pad;
         float h = 16f;
         float bx = x + pad;
@@ -180,6 +181,10 @@ public abstract class AbstractUnit {
 
     public void setRenderPosPx(Vector2 renderPosPx) {
         this.renderPosPx = renderPosPx;
+    }
+
+    public Vector2 getActionOffset() {
+        return actionOffset;
     }
 
 }
