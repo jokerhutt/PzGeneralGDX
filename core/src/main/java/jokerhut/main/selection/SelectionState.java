@@ -90,6 +90,7 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
     @Override
     public void onMotionFinished(AbstractUnit unit) {
 
+        System.out.println("Points after attack are now: " + unit.getMovementPoints());
         if (this.current.unit() == unit) {
             this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
             this.movementOverlay = MovementService.compute(current.unit().getPosition(),
@@ -156,12 +157,21 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
                         current.unit().getMovementPoints() + 1,
                         gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
 
+                System.out
+                        .println("Constructing new path to occupy enemy hex, points are: " + unit.getMovementPoints());
                 List<Axial> pathToNewPosition = reconstructPath(movementOverlay.parent(), movementOverlay.start(),
                         attackToPerform.newIntendedPosition());
+
                 movementSystem.move(current.unit(), pathToNewPosition);
 
             }
-            default -> System.out.println("Hello world");
+            default -> {
+                if (this.current.unit() == unit) {
+                    this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+                            current.unit().getMovementPoints(), gameMapContext, battleFieldContext,
+                            turnManagerContext.getCurrentPlayer().getFaction());
+                }
+            }
         }
     }
 
@@ -199,6 +209,7 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
                 PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack);
                 pendingAttacks.put(current.unit(), attackToPerform);
                 prepareAtttack(current.unit(), attackToPerform);
+                this.movementOverlay = null;
             } else {
 
                 Axial nearestEmptyHexToMoveTo = HexUtils.pickStaging(newIntendedPosition,
@@ -217,7 +228,6 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
                     soundManager.playMovement(current.unit().getUnitType());
 
                     if (!pathToNewPosition.isEmpty()) {
-                        current.unit().setMovementPoints(newPointsAfterAttack);
                         PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack);
                         movementSystem.move(current.unit(), pathToNewPosition);
                         this.movementOverlay = null;
@@ -225,9 +235,7 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
 
                 }
             }
-
             soundManager.rightClickSuccesSound.play();
-
         }
     }
 

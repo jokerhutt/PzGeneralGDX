@@ -50,10 +50,12 @@ public class MovementService {
                     if (battleField.unitAt(neighborDirection).getFaction() == playerFaction) {
                         continue;
                     } else {
+
                         int attackCost = currentNode.cost + hexMap.get(neighborDirection).getMoveCost() + 1;
                         if (attackCost <= movementPointsLeft) {
-
-                            attackable.put(neighborDirection, attackCost);
+                            System.out.println("CurrentNode Cost: " + currentNode.cost() + "Next hex cost: "
+                                    + hexMap.get(neighborDirection).getMoveCost() + " 1");
+                            attackable.merge(neighborDirection, attackCost, Math::min);
                         }
                         continue;
                     }

@@ -33,23 +33,6 @@ public class BattleField {
 
     }
 
-    public boolean moveUnit(AbstractUnit unit, Axial newPosition, Integer newMovePoints) {
-
-        Axial oldPosition = unit.getPosition();
-
-        if (occupiedHexes.containsKey(newPosition)) {
-            return false;
-        }
-
-        occupiedHexes.remove(oldPosition);
-        unit.setPosition(newPosition);
-        unit.setMovementPoints(newMovePoints);
-        occupiedHexes.put(newPosition, unit);
-
-        return true;
-
-    }
-
     public void commitMove(AbstractUnit unit, Axial to) {
         Axial from = unit.getPosition();
         if (from.equals(to))
@@ -109,6 +92,7 @@ public class BattleField {
             }
             occupiedHexes.remove(targetPosition);
             attackerUnit.setMovementPoints(newMovePoints);
+            System.out.println("Unit points are now: " + attackerUnit.getMovementPoints());
             return AttackResult.FULLVICTORY;
         } else if (attackerUnit.getHealth() <= 0) {
             if (attackerUnit.getFaction() == Faction.GERMAN) {
@@ -120,9 +104,12 @@ public class BattleField {
             return AttackResult.FULLDEFEAT;
         } else {
 
+            System.out.println("Current points: " + attackerUnit.getMovementPoints());
             float attackerHealthDifference = attackerHealth - newAttackerHealth;
             float defenderHealthDifference = defenderHealth - newDefenderHealth;
             attackerUnit.setMovementPoints(newMovePoints);
+
+            System.out.println("NewPoints: " + newMovePoints);
 
             if (attackerHealthDifference >= defenderHealthDifference) {
                 return AttackResult.VICTORY;
