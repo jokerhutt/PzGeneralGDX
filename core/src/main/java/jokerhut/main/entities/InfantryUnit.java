@@ -23,6 +23,10 @@ public class InfantryUnit extends AbstractUnit {
         setSoftAttack(3f);
         setHardAttack(1f);
         Vector2 p = HexUtils.axialToPixelCenter(pos);
+        setOrganization(10f);
+        setMaxOrganization(getOrganization());
+        setFuelCount(10f);
+        setMaxFuelCount(10f);
         setRenderPosPx(p);
     }
 }

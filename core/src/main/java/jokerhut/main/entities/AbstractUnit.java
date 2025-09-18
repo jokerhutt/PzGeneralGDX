@@ -25,6 +25,12 @@ public abstract class AbstractUnit {
     private Integer startingMovementPoints;
     private Faction faction;
     private float fuelCount;
+    private float maxFuelCount;
+    private float fuelConsumption;
+
+    private float organization;
+    private float maxOrganization;
+
     private Vector2 renderPosPx = new Vector2();
 
     private TextureRegion sprite;
@@ -186,6 +192,38 @@ public abstract class AbstractUnit {
 
     public void setRenderPosPx(Vector2 renderPosPx) {
         this.renderPosPx = renderPosPx;
+    }
+
+    public float getMaxFuelCount() {
+        return maxFuelCount;
+    }
+
+    public void setMaxFuelCount(float maxFuelCount) {
+        this.maxFuelCount = maxFuelCount;
+    }
+
+    public float getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(float organization) {
+        this.organization = organization;
+    }
+
+    public float getMaxOrganization() {
+        return maxOrganization;
+    }
+
+    public void setMaxOrganization(float maxOrganization) {
+        this.maxOrganization = maxOrganization;
+    }
+
+    public float getFuelConsumption() {
+        return fuelConsumption;
+    }
+
+    public void setFuelConsumption(float fuelConsumption) {
+        this.fuelConsumption = fuelConsumption;
     }
 
 }
