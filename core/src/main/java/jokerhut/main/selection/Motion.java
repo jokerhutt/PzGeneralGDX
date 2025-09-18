@@ -11,7 +11,7 @@ import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.screen.BattleField;
 import jokerhut.main.utils.HexUtils;
 
-final class Motion {
+public final class Motion {
     final AbstractUnit unit;
     final ArrayDeque<Axial> remainingTiles;
     Axial fromAx;

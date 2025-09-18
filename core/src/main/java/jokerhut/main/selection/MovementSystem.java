@@ -25,6 +25,10 @@ public class MovementSystem {
         listeners.remove(listener);
     }
 
+    public boolean isEmpty() {
+        return this.active.isEmpty();
+    }
+
     private void notifyFinished(AbstractUnit u) {
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onMotionFinished(u);

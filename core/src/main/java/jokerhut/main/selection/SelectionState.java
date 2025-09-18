@@ -25,7 +25,7 @@ import jokerhut.main.service.PendingAttack;
 import jokerhut.main.sound.SoundManager;
 import jokerhut.main.utils.HexUtils;
 
-public class SelectionState implements SelectionListener, MovementListener, CombatListener {
+public class SelectionState implements SelectionListener, MovementListener, CombatListener, TurnListener {
 
     private Selection current;
     private MovementOverlay movementOverlay;
@@ -84,6 +84,11 @@ public class SelectionState implements SelectionListener, MovementListener, Comb
             handleRightClick(clickEvent);
 
         }
+
+    }
+
+    @Override
+    public void onStartTurn() {
 
     }
 

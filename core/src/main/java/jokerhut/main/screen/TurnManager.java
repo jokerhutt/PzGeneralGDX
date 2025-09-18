@@ -4,6 +4,9 @@ import java.util.List;
 
 import jokerhut.main.entities.AbstractUnit;
 import jokerhut.main.enums.Faction;
+import jokerhut.main.selection.CombatSystem;
+import jokerhut.main.selection.MovementSystem;
+import jokerhut.main.sound.SoundManager;
 
 public class TurnManager {
 
@@ -11,7 +14,17 @@ public class TurnManager {
     private int turnIndex = 0;
     private int turnNumber = 0;
 
-    public TurnManager(List<PlayerState> players) {
+    private CombatSystem combatSystemContext;
+    private MovementSystem movementSystemContext;
+    private SoundManager soundManager;
+
+    public TurnManager(List<PlayerState> players, CombatSystem combatSystemContext,
+            MovementSystem movementSystemContext, SoundManager soundManager) {
+
+        this.combatSystemContext = combatSystemContext;
+        this.movementSystemContext = movementSystemContext;
+        this.soundManager = soundManager;
+
         this.players = players;
         if (getCurrentPlayer().getFaction() == Faction.BRITISH) {
 
@@ -36,11 +49,19 @@ public class TurnManager {
     }
 
     public void endTurn() {
-        turnIndex = (turnIndex + 1) % players.size();
-        if (turnIndex == 0) {
-            turnNumber++;
+
+        if (combatSystemContext.isEmpty() && movementSystemContext.isEmpty()) {
+
+            turnIndex = (turnIndex + 1) % players.size();
+            if (turnIndex == 0) {
+                turnNumber++;
+            }
+            startTurn();
+
+        } else {
+            soundManager.rightClickInvalidsound.play();
         }
-        startTurn();
+
     }
 
     public List<PlayerState> getPlayers() {

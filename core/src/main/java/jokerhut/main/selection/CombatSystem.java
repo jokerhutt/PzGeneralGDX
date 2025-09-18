@@ -17,6 +17,7 @@ public class CombatSystem {
 
     public void addListener(CombatListener listener) {
         listeners.add(listener);
+
     }
 
     public void removeListener(CombatListener listener) {
@@ -27,6 +28,10 @@ public class CombatSystem {
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onCombatFinished(attacker);
         }
+    }
+
+    public boolean isEmpty() {
+        return this.activeAttacks.isEmpty();
     }
 
     public void startAttackTimer(AbstractUnit attacker) {

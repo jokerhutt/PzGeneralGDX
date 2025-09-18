@@ -2,7 +2,7 @@ package jokerhut.main.selection;
 
 import jokerhut.main.entities.AbstractUnit;
 
-final class Combat {
+public final class Combat {
 
     AbstractUnit defender;
     AbstractUnit attacker;

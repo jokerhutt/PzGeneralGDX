@@ -60,7 +60,7 @@ public class SidebarStage extends Stage {
             public void clicked(InputEvent e, float x, float y) {
                 System.out.println("clicked");
                 turnManagerContext.endTurn();
-                selectionState.clear();
+                selectionState.setMovementOverlay(null);
                 updateState(null);
                 hexInfoGroup.updateTurnState(turnManagerContext);
             }

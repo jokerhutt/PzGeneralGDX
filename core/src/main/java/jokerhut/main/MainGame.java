@@ -107,10 +107,11 @@ public class MainGame extends ApplicationAdapter {
         List<PlayerState> players = new ArrayList<>();
         players.add(alliedPlayer);
         players.add(axisPlayer);
-        turnManager = new TurnManager(players);
-        turnManager.startTurn();
 
         this.combatSystem = new CombatSystem(battleField);
+
+        turnManager = new TurnManager(players, combatSystem, movementSystem, soundManager);
+        turnManager.startTurn();
 
         selectionState = new SelectionState(hexMap, battleField, turnManager, soundManager, movementSystem,
                 effectSystem, combatSystem);
