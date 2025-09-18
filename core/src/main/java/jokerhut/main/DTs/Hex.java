@@ -1,5 +1,7 @@
 package jokerhut.main.DTs;
 
+import jokerhut.main.terrain.TerrainProfile;
+
 public class Hex {
 
     private int q;
@@ -10,7 +12,9 @@ public class Hex {
     private int defence;
     private int moveCost;
 
-    public Hex (int q, int r, String terrain, int defence, int moveCost) {
+    private TerrainProfile terrainProfile;
+
+    public Hex(int q, int r, String terrain, int defence, int moveCost) {
         this.q = q;
         this.r = r;
         this.terrain = terrain;
@@ -58,6 +62,12 @@ public class Hex {
         this.moveCost = moveCost;
     }
 
+    public TerrainProfile getTerrainProfile() {
+        return terrainProfile;
+    }
 
+    public void setTerrainProfile(TerrainProfile terrainProfile) {
+        this.terrainProfile = terrainProfile;
+    }
 
 }

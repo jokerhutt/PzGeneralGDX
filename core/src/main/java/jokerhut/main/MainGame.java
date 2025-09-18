@@ -100,7 +100,7 @@ public class MainGame extends ApplicationAdapter {
         movementSystem = new MovementSystem(battleField, 600f);
         effectSystem = new EffectSystem();
 
-        int[][] offsetGrid = TerrainUtils.generateTerrainWith2DCoordinates(map);
+        int[][] offsetGrid = TerrainUtils.generateBaseLayerWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
