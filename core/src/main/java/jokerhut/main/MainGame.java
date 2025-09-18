@@ -26,6 +26,7 @@ import jokerhut.main.DTs.TerrainProps;
 import jokerhut.main.animation.EffectSystem;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.enums.Faction;
+import jokerhut.main.enums.HexDebugType;
 import jokerhut.main.input.InputProcessor;
 import jokerhut.main.renderer.GameRenderer;
 import jokerhut.main.screen.BattleField;
@@ -83,7 +84,7 @@ public class MainGame extends ApplicationAdapter {
     public void create() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 4f;
+        camera.zoom = 10f;
         batch = new SpriteBatch();
         font = new BitmapFont();
         font.getData().setScale(2f);
@@ -103,6 +104,8 @@ public class MainGame extends ApplicationAdapter {
         int[][] offsetGrid = TerrainUtils.generateBaseLayerWith2DCoordinates(map);
         IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
         hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
+
+        TerrainUtils.enrichHexesFromTiles(map, hexMap);
 
         List<PlayerState> players = new ArrayList<>();
         players.add(alliedPlayer);
@@ -158,7 +161,7 @@ public class MainGame extends ApplicationAdapter {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        HexDebugUtils.renderHexInfo(null, hexMap, batch, font);
+        HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
 
         effectSystem.render(batch);
         batch.end();

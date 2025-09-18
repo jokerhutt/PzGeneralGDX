@@ -100,13 +100,22 @@ public class HexUtils {
     }
 
     public static Axial offsetToAxial(int col, int row) {
-
         int parity = col & 1;
 
         int q = col;
         int r = row - (col - parity) / 2;
 
         return new Axial(q, r);
+
+    }
+
+    public static Axial offsetToAxial(int col, int row, boolean oddQ) {
+
+        int q = col;
+        int r = oddQ
+                ? row - (col + (col & 1)) / 2
+                : row - (col - (col & 1)) / 2;
+        return new Axial(q, r + 1);
 
     }
 

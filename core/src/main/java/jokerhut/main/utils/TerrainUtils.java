@@ -23,7 +23,11 @@ public class TerrainUtils {
         int width = layer.getWidth();
         int height = layer.getHeight();
 
+        System.out.println("WIDTH OF LAYER 0: " + width + " HEIGHT OF LAYER 0: " + height);
+
         int[][] terrain = new int[width][height];
+
+        int count = 0;
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -33,9 +37,11 @@ public class TerrainUtils {
                 } else {
                     terrain[x][y] = -1;
                 }
+                count++;
             }
         }
 
+        System.out.println("LAYER 0 TRAVERSED: " + count);
         return terrain;
 
     }
@@ -44,13 +50,17 @@ public class TerrainUtils {
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(1);
         int w = layer.getWidth(), h = layer.getHeight();
 
+        int count = 0;
+        System.out.println("WIDTH OF LAYER 1: " + w + " HEIGHT OF LAYER 1: " + h);
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
+
+                count++;
                 TiledMapTileLayer.Cell cell = layer.getCell(x, y);
                 if (cell == null)
                     continue;
 
-                Axial a = HexUtils.offsetToAxial(x, y);
+                Axial a = HexUtils.offsetToAxial(x, y, true);
                 Hex hex = axialMap.get(a);
                 if (hex == null)
                     continue;
@@ -59,7 +69,7 @@ public class TerrainUtils {
 
                 TerrainProfile terrainProfile = new TerrainProfile();
 
-                terrainProfile.setTerrainType(p.get("terrainType", (String) null, String.class));
+                terrainProfile.setTerrainType(p.get("type", (String) null, String.class));
                 terrainProfile.setProvidesSupply(p.get("providesSupply", false, Boolean.class));
                 terrainProfile.setSupplyRange(p.get("supplyRange", 0, Integer.class));
                 terrainProfile.setEntrenchCap(p.get("entrenchCap", 0, Integer.class));
@@ -68,10 +78,14 @@ public class TerrainUtils {
                 hex.setTerrainProfile(terrainProfile);
 
             }
+
         }
+
+        System.out.println("LAYER 1 TRAVERSED: " + count);
     }
 
-    public static HashMap<Axial, Hex> generateAxialMap(int[][] offsetGrid, IntMap<TerrainProps> tileProps) {
+    public static HashMap<Axial, Hex> generateAxialMap(int[][] offsetGrid,
+            IntMap<TerrainProps> tileProps) {
 
         HashMap<Axial, Hex> axialMap = new HashMap<>();
 
@@ -82,7 +96,7 @@ public class TerrainUtils {
                 if (tileId == -1)
                     continue;
 
-                Axial axialCoordinates = HexUtils.offsetToAxial(col, row);
+                Axial axialCoordinates = HexUtils.offsetToAxial(col, row, true);
                 TerrainProps terrainProps = tileProps.get(tileId);
                 axialMap.put(axialCoordinates, new Hex(axialCoordinates.q(), axialCoordinates.r(),
                         terrainProps.terrain(), terrainProps.defense(), terrainProps.moveCost()));
@@ -105,8 +119,6 @@ public class TerrainUtils {
 
                 int def = props.get("defence", 0, Integer.class);
                 int move = props.get("moveCost", 1, Integer.class);
-
-                System.out.println("TERRAIN: " + terr + " DEFENCE: " + def + " MOVECOST: " + move);
 
                 out.put(mapTile.getId(), new TerrainProps(terr, def, move));
             }

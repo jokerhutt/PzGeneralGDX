@@ -80,7 +80,7 @@ public class SidebarStage extends Stage {
     public void updateState(Selection selection) {
 
         if (selection == null) {
-            hexInfoGroup.updateInfo(null, null);
+            hexInfoGroup.updateInfo(null);
             unitInfoTable.update(null);
             return;
         }
@@ -89,11 +89,11 @@ public class SidebarStage extends Stage {
         if (h == null)
             h = selectionState.getGameMapContext().get(selection.axial());
         if (h == null) { // off-map or cleared
-            hexInfoGroup.updateInfo(null, selection.axial());
+            hexInfoGroup.updateInfo(null);
             unitInfoTable.update(selection.unit());
             return;
         }
-        hexInfoGroup.updateInfo(h.getTerrain(), selection.axial());
+        hexInfoGroup.updateInfo(h);
         unitInfoTable.update(selection.unit());
 
     }
