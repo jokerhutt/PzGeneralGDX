@@ -22,7 +22,7 @@ public class MovementService {
 	};
 
 	public static SupplyRangeOverlay computeSupplyRange(Axial startCoordinate, int supplyRange,
-			HashMap<Axial, Hex> hexMap) {
+			HashMap<Axial, Hex> hexMap, HashMap<Axial, Integer> supplyField) {
 
 		HashMap<Axial, Integer> cost = new HashMap<>();
 		HashMap<Axial, Axial> parent = new HashMap<>();
@@ -71,7 +71,13 @@ public class MovementService {
 		int max = cost.values().stream().max(Integer::compareTo).orElse(0);
 		HashMap<Axial, Integer> inverted = new HashMap<>();
 		for (var entry : cost.entrySet()) {
-			inverted.put(entry.getKey(), max - entry.getValue());
+			inverted.put(entry.getKey(), (max - entry.getValue()) + 1);
+			Integer supplyProvided = inverted.get(entry.getKey());
+
+			if (!supplyField.containsKey(entry.getKey()) || supplyProvided > supplyField.get(entry.getKey())) {
+				supplyField.put(entry.getKey(), supplyProvided);
+			}
+
 		}
 		return new SupplyRangeOverlay(startCoordinate, supplyRange, inverted, parent);
 

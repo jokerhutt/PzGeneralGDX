@@ -56,6 +56,7 @@ public class MainGame extends ApplicationAdapter {
 	private ShapeRenderer shapeRenderer;
 	private BitmapFont font;
 	private HashMap<Axial, Hex> hexMap;
+	private HashMap<Axial, Integer> supplyField = new HashMap<>();
 
 	// ----- GAME LOGIC ----- //
 	private BattleField battleField;
@@ -105,7 +106,7 @@ public class MainGame extends ApplicationAdapter {
 		IntMap<TerrainProps> tileProps = TerrainUtils.buildTileProps(map);
 		hexMap = TerrainUtils.generateAxialMap(offsetGrid, tileProps);
 
-		TerrainUtils.enrichHexesFromTiles(map, hexMap);
+		TerrainUtils.enrichHexesFromTiles(map, hexMap, supplyField);
 
 		List<Player> players = new ArrayList<>();
 		players.add(alliedPlayer);
@@ -113,7 +114,7 @@ public class MainGame extends ApplicationAdapter {
 
 		this.combatSystem = new CombatSystem(battleField);
 
-		turnManager = new TurnManager(players, combatSystem, movementSystem, soundManager, hexMap);
+		turnManager = new TurnManager(players, combatSystem, movementSystem, soundManager, hexMap, supplyField);
 		turnManager.startTurn();
 
 		selectionController = new SelectionController(hexMap, battleField, turnManager, soundManager, movementSystem,

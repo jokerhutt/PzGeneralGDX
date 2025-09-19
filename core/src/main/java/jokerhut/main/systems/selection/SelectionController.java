@@ -245,7 +245,8 @@ public class SelectionController implements SelectionListener, MovementListener,
 		Integer costForMovementAndAttack = attackable.get(newIntendedPosition);
 
 		Float currentFuelCount = current.unit().getFuelCount();
-		Float fuelCostForMovement = current.unit().getFuelConsumption();
+		Integer hexDistance = HexUtils.hexDistance(current.unit().getPosition(), newIntendedPosition);
+		Float fuelCostForMovement = current.unit().getFuelConsumption() * hexDistance;
 		Float newFuelCount = currentFuelCount - fuelCostForMovement;
 
 		if (costForMovementAndAttack == null || newFuelCount == null) {
@@ -302,7 +303,9 @@ public class SelectionController implements SelectionListener, MovementListener,
 		Integer costForMovement = reachableHexes.get(newIntendedPosition);
 
 		Float currentFuelCount = current.unit().getFuelCount();
-		Float fuelCostForMovement = current.unit().getFuelConsumption();
+
+		Integer hexDistance = HexUtils.hexDistance(current.unit().getPosition(), newIntendedPosition);
+		Float fuelCostForMovement = current.unit().getFuelConsumption() * hexDistance;
 
 		Float newFuelCount = currentFuelCount - fuelCostForMovement;
 

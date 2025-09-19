@@ -47,7 +47,8 @@ public class TerrainUtils {
 
 	}
 
-	public static void enrichHexesFromTiles(TiledMap map, HashMap<Axial, Hex> axialMap) {
+	public static void enrichHexesFromTiles(TiledMap map, HashMap<Axial, Hex> axialMap,
+			HashMap<Axial, Integer> supplyField) {
 		TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(1);
 		int w = layer.getWidth(), h = layer.getHeight();
 
@@ -78,7 +79,8 @@ public class TerrainUtils {
 
 				if (terrainProfile.isProvidesSupply()) {
 					terrainProfile.setSupplyRangeOverlay(
-							MovementService.computeSupplyRange(a, terrainProfile.getSupplyRange(), axialMap));
+							MovementService.computeSupplyRange(a, terrainProfile.getSupplyRange(), axialMap,
+									supplyField));
 				}
 
 				hex.setTerrainProfile(terrainProfile);

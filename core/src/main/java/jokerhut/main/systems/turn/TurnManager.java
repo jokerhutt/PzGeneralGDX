@@ -23,14 +23,17 @@ public class TurnManager {
 	private MovementSystem movementSystemContext;
 	private SoundManager soundManager;
 	private HashMap<Axial, Hex> gameMapContext;
+	private HashMap<Axial, Integer> supplyFieldContext;
 
 	public TurnManager(List<Player> players, CombatSystem combatSystemContext,
-			MovementSystem movementSystemContext, SoundManager soundManager, HashMap<Axial, Hex> gameMapContext) {
+			MovementSystem movementSystemContext, SoundManager soundManager, HashMap<Axial, Hex> gameMapContext,
+			HashMap<Axial, Integer> supplyFieldContext) {
 
 		this.combatSystemContext = combatSystemContext;
 		this.movementSystemContext = movementSystemContext;
 		this.soundManager = soundManager;
 		this.gameMapContext = gameMapContext;
+		this.supplyFieldContext = supplyFieldContext;
 
 		this.players = players;
 		if (getCurrentPlayer().getFaction() == Faction.BRITISH) {
@@ -57,30 +60,34 @@ public class TurnManager {
 
 				Hex hexOfUnit = gameMapContext.get(unit.getPosition());
 
-				if (hexOfUnit != null && hexOfUnit.getTerrainProfile() != null) {
+				if (hexOfUnit != null) {
 
 					TerrainProfile terrainProfile = hexOfUnit.getTerrainProfile();
 
-					if (terrainProfile.isProvidesSupply()) {
+					if (supplyFieldContext.containsKey(unit.getPosition())) {
+						System.out.println("In supply");
 
-						float fuelAdded = terrainProfile.getSupplyRangeOverlay().supplyableHexCosts()
-								.get(unit.getPosition());
-
+						float fuelAdded = supplyFieldContext.get(unit.getPosition());
 						float newIntendedFuelCount = unit.getFuelCount() + fuelAdded;
+
 						if (newIntendedFuelCount <= unit.getMaxFuelCount()) {
 							unit.setFuelCount(newIntendedFuelCount);
 						} else {
 							unit.setFuelCount(unit.getMaxFuelCount());
 						}
 
+					} else {
+						System.out.println("not in supply");
 					}
 
-					if (terrainProfile.getEntrenchCap() > unit.getEntrenchment()) {
+					if (terrainProfile != null && terrainProfile.getEntrenchCap() > unit.getEntrenchment()) {
 						unit.setEntrenchment(unit.getEntrenchment() + 1);
 					}
 
 				}
 
+			} else {
+				System.out.println("Not idle");
 			}
 
 		}

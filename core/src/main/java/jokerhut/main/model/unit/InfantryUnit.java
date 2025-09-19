@@ -26,7 +26,7 @@ public class InfantryUnit extends AbstractUnit {
 		setOrganization(10f);
 		setMaxOrganization(getOrganization());
 		setFuelCount(10f);
-		setFuelConsumption(1f);
+		setFuelConsumption(0.4f);
 		setMaxFuelCount(10f);
 		setRenderPosPx(p);
 	}

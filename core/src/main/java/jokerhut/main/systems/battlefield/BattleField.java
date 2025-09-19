@@ -86,6 +86,12 @@ public class BattleField {
 		attackerUnit.setHealth(newAttackerHealth);
 		defendingUnit.setHealth(newDefenderHealth);
 
+		float attackerHealthDifference = attackerHealth - newAttackerHealth;
+		float defenderHealthDifference = defenderHealth - newDefenderHealth;
+
+		attackerUnit.setOrganization(attackerUnit.getOrganization() - (attackerHealthDifference / 3));
+		defendingUnit.setOrganization(defendingUnit.getOrganization() - (defenderHealthDifference / 5));
+
 		if (defendingUnit.getHealth() <= 0) {
 			if (defendingUnit.getFaction() == Faction.GERMAN) {
 				axisPlayer.getUnits().remove(defendingUnit);
@@ -95,6 +101,7 @@ public class BattleField {
 			occupiedHexes.remove(targetPosition);
 			attackerUnit.setMovementPoints(newMovePoints);
 			attackerUnit.setFuelCount(newFuelPoints);
+			attackerUnit.setOrganization(attackerUnit.getOrganization() + 0.4f);
 			System.out.println("Unit points are now: " + attackerUnit.getMovementPoints());
 			return AttackResult.FULLVICTORY;
 		} else if (attackerUnit.getHealth() <= 0) {
@@ -108,16 +115,19 @@ public class BattleField {
 		} else {
 
 			System.out.println("Current points: " + attackerUnit.getMovementPoints());
-			float attackerHealthDifference = attackerHealth - newAttackerHealth;
-			float defenderHealthDifference = defenderHealth - newDefenderHealth;
+
 			attackerUnit.setMovementPoints(newMovePoints);
 			attackerUnit.setFuelCount(newFuelPoints);
 
 			System.out.println("NewPoints: " + newMovePoints);
 
 			if (attackerHealthDifference >= defenderHealthDifference) {
+				attackerUnit.setOrganization(attackerUnit.getOrganization() + 0.3f);
+				defendingUnit.setOrganization(defendingUnit.getOrganization() - 0.2f);
 				return AttackResult.VICTORY;
 			} else {
+				attackerUnit.setOrganization(attackerUnit.getOrganization() - 0.3f);
+				defendingUnit.setOrganization(defendingUnit.getOrganization() + 0.2f);
 				return AttackResult.DEFEAT;
 			}
 		}
