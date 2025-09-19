@@ -25,7 +25,7 @@ public class ArmoredUnit extends AbstractUnit {
 		setHardAttack(4f);
 		setFuelCount(20f);
 		setMaxFuelCount(20f);
-		setFuelConsumption(1f);
+		setFuelConsumption(3f);
 		setOrganization(15);
 		setMaxOrganization(15);
 		Vector2 p = HexUtils.axialToPixelCenter(pos);
