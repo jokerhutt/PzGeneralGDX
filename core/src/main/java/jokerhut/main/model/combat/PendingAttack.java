@@ -5,6 +5,7 @@ import jokerhut.main.model.hex.Axial;
 public record PendingAttack(
 		Axial newIntendedPosition,
 		Integer mpAfter,
-		Float fuelAfter) {
+		Float fuelAfter,
+		Float organizationAfter) {
 
 }

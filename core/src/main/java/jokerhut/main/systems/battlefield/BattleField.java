@@ -16,6 +16,7 @@ import jokerhut.main.model.unit.AbstractUnit;
 import jokerhut.main.model.unit.ArmoredUnit;
 import jokerhut.main.model.unit.InfantryUnit;
 import jokerhut.main.systems.audio.SoundManager;
+import jokerhut.main.utils.CombatUtils;
 
 public class BattleField {
 
@@ -60,9 +61,7 @@ public class BattleField {
 		}
 	}
 
-	public AttackResult attackUnit(AbstractUnit attackerUnit, Axial targetPosition, Integer newMovePoints,
-			Float newFuelPoints) {
-		AbstractUnit defendingUnit = unitAt(targetPosition);
+	private void performCombat(AbstractUnit attackerUnit, AbstractUnit defendingUnit) {
 
 		float attackerHealth = attackerUnit.getHealth();
 		float defenderHealth = defendingUnit.getHealth();
@@ -73,24 +72,54 @@ public class BattleField {
 		float attackerAttack = attackerUnit.getSoftAttack();
 		float defenderAttack = defendingUnit.getSoftAttack();
 
-		float newAttackerHealth = attackerHealth - (defenderAttack - attackerDefence / 2f);
-		float newDefenderHealth = defenderHealth - (attackerAttack - defenderDefence);
+		float attackerOrganization = attackerUnit.getOrganization();
+		float defenderOrganization = defendingUnit.getOrganization();
 
-		System.out.println("newAttackerHealth: " + attackerHealth + " - " + "(" + defenderAttack + " + "
-				+ attackerDefence + " / " + "2" + ") = " + newAttackerHealth);
+		float attackerMaxOrganization = attackerUnit.getMaxOrganization();
+		float defenderMaxOrganization = defendingUnit.getMaxOrganization();
 
-		System.out.println("newDefenderHealth: " + defenderHealth + " - " + "(" + attackerAttack + " + "
-				+ defenderDefence + ") = " + newDefenderHealth);
-		System.out.println("New Defender Health: " + newDefenderHealth + "New Attacker Health: " + newAttackerHealth);
+		float attackerEffectiveDamage = CombatUtils.effAtk(attackerAttack, attackerOrganization,
+				attackerMaxOrganization);
+		float defenderEffectiveDamage = CombatUtils.effAtk(defenderAttack, defenderOrganization,
+				defenderMaxOrganization);
 
-		attackerUnit.setHealth(newAttackerHealth);
-		defendingUnit.setHealth(newDefenderHealth);
+		float dmgToDefender = CombatUtils.dmg(attackerEffectiveDamage, defenderDefence, defenderOrganization,
+				defenderMaxOrganization);
+		float dmgToAttacker = CombatUtils.dmg(defenderEffectiveDamage, attackerDefence, attackerOrganization,
+				attackerMaxOrganization);
+
+		float DEF_BONUS = 1.2f;
+
+		dmgToDefender = dmgToDefender / DEF_BONUS;
+
+		dmgToDefender = Math.min(dmgToDefender, defenderHealth);
+		dmgToAttacker = Math.min(dmgToAttacker, attackerHealth);
+
+		attackerUnit.setHealth(attackerHealth - dmgToAttacker);
+		defendingUnit.setHealth(defenderHealth - dmgToDefender);
+
+		defendingUnit
+				.setOrganization(defenderOrganization - (CombatUtils.ORG_DMG * dmgToDefender) - CombatUtils.ORG_FIRE);
+		attackerUnit
+				.setOrganization(attackerOrganization - (CombatUtils.ORG_DMG * dmgToAttacker) - CombatUtils.ORG_FIRE);
+
+	}
+
+	public AttackResult attackUnit(AbstractUnit attackerUnit, Axial targetPosition, Integer newMovePoints,
+			Float newFuelPoints, Float newOrganizationPoints) {
+		attackerUnit.setOrganization(newOrganizationPoints);
+		AbstractUnit defendingUnit = unitAt(targetPosition);
+
+		float attackerHealth = attackerUnit.getHealth();
+		float defenderHealth = defendingUnit.getHealth();
+
+		performCombat(attackerUnit, defendingUnit);
+
+		float newAttackerHealth = attackerUnit.getHealth();
+		float newDefenderHealth = defendingUnit.getHealth();
 
 		float attackerHealthDifference = attackerHealth - newAttackerHealth;
 		float defenderHealthDifference = defenderHealth - newDefenderHealth;
-
-		attackerUnit.setOrganization(attackerUnit.getOrganization() - (attackerHealthDifference / 3));
-		defendingUnit.setOrganization(defendingUnit.getOrganization() - (defenderHealthDifference / 5));
 
 		if (defendingUnit.getHealth() <= 0) {
 			if (defendingUnit.getFaction() == Faction.GERMAN) {
@@ -101,7 +130,6 @@ public class BattleField {
 			occupiedHexes.remove(targetPosition);
 			attackerUnit.setMovementPoints(newMovePoints);
 			attackerUnit.setFuelCount(newFuelPoints);
-			attackerUnit.setOrganization(attackerUnit.getOrganization() + 0.4f);
 			System.out.println("Unit points are now: " + attackerUnit.getMovementPoints());
 			return AttackResult.FULLVICTORY;
 		} else if (attackerUnit.getHealth() <= 0) {
@@ -122,12 +150,8 @@ public class BattleField {
 			System.out.println("NewPoints: " + newMovePoints);
 
 			if (attackerHealthDifference >= defenderHealthDifference) {
-				attackerUnit.setOrganization(attackerUnit.getOrganization() + 0.3f);
-				defendingUnit.setOrganization(defendingUnit.getOrganization() - 0.2f);
 				return AttackResult.VICTORY;
 			} else {
-				attackerUnit.setOrganization(attackerUnit.getOrganization() - 0.3f);
-				defendingUnit.setOrganization(defendingUnit.getOrganization() + 0.2f);
 				return AttackResult.DEFEAT;
 			}
 		}
