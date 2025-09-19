@@ -53,13 +53,19 @@ public class UnitStatsGroup extends VerticalGroup {
 			fuelRow.setValue("- / -");
 			organizationRow.setValue("- / -");
 		} else {
-			defenceRow.setValue(String.valueOf(unit.getDefense()));
-			healthRow.setValue(String.valueOf(unit.getHealth()));
-			softRow.setValue(String.valueOf(unit.getSoftAttack()));
-			hardRow.setValue(String.valueOf(unit.getHardAttack()));
-			movementLeftRow.setValue(String.valueOf(unit.getMovementPoints() + "/" + unit.getMovementPoints()));
-			fuelRow.setValue(String.valueOf(unit.getFuelCount() + "/" + unit.getMaxFuelCount()));
-			organizationRow.setValue(String.valueOf(unit.getOrganization() + "/" + unit.getMaxOrganization()));
+			defenceRow.setValue(String.format("%.1f", unit.getDefense()));
+			healthRow.setValue(String.format("%.1f", unit.getHealth()));
+			softRow.setValue(String.format("%.1f", unit.getSoftAttack()));
+			hardRow.setValue(String.format("%.1f", unit.getHardAttack()));
+
+			movementLeftRow.setValue(
+					unit.getMovementPoints() + "/" + unit.getStartingMovementPoints());
+
+			fuelRow.setValue(String.format("%.1f/%.1f",
+					unit.getFuelCount(), unit.getMaxFuelCount()));
+
+			organizationRow.setValue(String.format("%.1f/%.1f",
+					unit.getOrganization(), unit.getMaxOrganization()));
 		}
 	}
 

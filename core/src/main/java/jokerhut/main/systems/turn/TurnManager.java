@@ -58,6 +58,13 @@ public class TurnManager {
 
 			if (unit.getIdleFor() > 1) {
 
+				Float currentOrganization = unit.getOrganization();
+				Float intendedOrganizationToAdd = 0.2f;
+
+				if (unit.getIdleFor() > 2) {
+					intendedOrganizationToAdd += 0.1f;
+				}
+
 				Hex hexOfUnit = gameMapContext.get(unit.getPosition());
 
 				if (hexOfUnit != null) {
@@ -68,6 +75,9 @@ public class TurnManager {
 						System.out.println("In supply");
 
 						float fuelAdded = supplyFieldContext.get(unit.getPosition());
+
+						intendedOrganizationToAdd += (fuelAdded * 0.1f) / 2f;
+
 						float newIntendedFuelCount = unit.getFuelCount() + fuelAdded;
 
 						if (newIntendedFuelCount <= unit.getMaxFuelCount()) {
@@ -78,6 +88,13 @@ public class TurnManager {
 
 					} else {
 						System.out.println("not in supply");
+					}
+
+					Float newIntendedOrganization = unit.getOrganization() + intendedOrganizationToAdd;
+					if (newIntendedOrganization <= unit.getMaxOrganization()) {
+						unit.setOrganization(newIntendedOrganization);
+					} else {
+						unit.setOrganization(unit.getMaxOrganization());
 					}
 
 					if (terrainProfile != null && terrainProfile.getEntrenchCap() > unit.getEntrenchment()) {
