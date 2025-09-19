@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import jokerhut.main.UI.sidebar.SidebarStage;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.model.enums.Faction;
-import jokerhut.main.model.enums.HexDebugType;
 import jokerhut.main.model.geo.TerrainProps;
 import jokerhut.main.model.hex.Axial;
 import jokerhut.main.model.hex.Hex;
@@ -162,7 +161,7 @@ public class MainGame extends ApplicationAdapter {
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		HexDebugUtils.renderHexInfo(HexDebugType.AXIAL, hexMap, batch, font);
+		HexDebugUtils.renderHexInfo(null, hexMap, batch, font);
 
 		effectSystem.render(batch);
 		batch.end();

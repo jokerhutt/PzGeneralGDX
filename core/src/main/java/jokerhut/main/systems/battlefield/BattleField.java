@@ -160,22 +160,44 @@ public class BattleField {
 
 	private void addMockUnits() {
 
-		InfantryUnit unitOne = new InfantryUnit("15th Tommies", new Axial(20, 10),
+		// Allies (UK)
+		InfantryUnit uk18thBrigade = new InfantryUnit("18th Brigade", new Axial(20, 10),
 				new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
-		InfantryUnit unitTwo = new InfantryUnit("3rd Highlanders", new Axial(22, 9),
+		InfantryUnit uk25thBrigade = new InfantryUnit("25th Brigade", new Axial(22, 9),
 				new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
+		InfantryUnit uk24thBrigade = new InfantryUnit("24th Brigade", new Axial(17, 13),
+				new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
+		InfantryUnit uk20thBrigade = new InfantryUnit("20th Brigade", new Axial(18, 12),
+				new TextureRegion(new Texture(Gdx.files.internal("units/UK_INF.png"))), Faction.BRITISH);
+		ArmoredUnit uk4thHussars = new ArmoredUnit("4th Queen's Own Hussars", new Axial(16, 13),
+				new TextureRegion(new Texture(Gdx.files.internal("units/matilda.png"))), Faction.BRITISH);
 
-		ArmoredUnit armoredOne = new ArmoredUnit("Panzer Lehr", new Axial(18, 6),
+		// Axis (Germany)
+		ArmoredUnit dePzAbt190 = new ArmoredUnit("Panzer-Abteilung 190", new Axial(18, 6),
 				new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
-
-		InfantryUnit infantryUnit = new InfantryUnit("GebirgsJager", new Axial(18, 8),
+		ArmoredUnit dePzRgt8 = new ArmoredUnit("Panzer-Regiment 8", new Axial(19, 7),
+				new TextureRegion(new Texture(Gdx.files.internal("units/panzerThree.png"))), Faction.GERMAN);
+		InfantryUnit dePzGren155 = new InfantryUnit("Panzergrenadier-Regiment 155", new Axial(18, 8),
+				new TextureRegion(new Texture(Gdx.files.internal("newAssets/bigunits/Wehrmacht_Inf.png"))),
+				Faction.GERMAN);
+		InfantryUnit dePzGren361A = new InfantryUnit("Panzergrenadier-Regiment 361", new Axial(18, 4),
+				new TextureRegion(new Texture(Gdx.files.internal("newAssets/bigunits/Wehrmacht_Inf.png"))),
+				Faction.GERMAN);
+		InfantryUnit dePzGren361B = new InfantryUnit("Panzergrenadier-Regiment 361", new Axial(17, 9),
 				new TextureRegion(new Texture(Gdx.files.internal("newAssets/bigunits/Wehrmacht_Inf.png"))),
 				Faction.GERMAN);
 
-		spawn(unitOne, new Axial(20, 10), alliedPlayer);
-		spawn(unitTwo, new Axial(22, 9), alliedPlayer);
-		spawn(armoredOne, new Axial(18, 6), axisPlayer);
-		spawn(infantryUnit, new Axial(18, 8), axisPlayer);
+		spawn(uk18thBrigade, uk18thBrigade.getPosition(), alliedPlayer);
+		spawn(uk25thBrigade, uk25thBrigade.getPosition(), alliedPlayer);
+		spawn(uk24thBrigade, uk24thBrigade.getPosition(), alliedPlayer);
+		spawn(uk20thBrigade, uk20thBrigade.getPosition(), alliedPlayer);
+		spawn(uk4thHussars, uk4thHussars.getPosition(), alliedPlayer);
+
+		spawn(dePzAbt190, dePzAbt190.getPosition(), axisPlayer);
+		spawn(dePzRgt8, dePzRgt8.getPosition(), axisPlayer);
+		spawn(dePzGren155, dePzGren155.getPosition(), axisPlayer);
+		spawn(dePzGren361A, dePzGren361A.getPosition(), axisPlayer);
+		spawn(dePzGren361B, dePzGren361B.getPosition(), axisPlayer);
 	}
 
 	private void spawn(AbstractUnit unit, Axial position, Player player) {
