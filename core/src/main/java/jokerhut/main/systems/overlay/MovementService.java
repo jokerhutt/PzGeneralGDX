@@ -68,7 +68,12 @@ public class MovementService {
 
 		}
 
-		return new SupplyRangeOverlay(startCoordinate, supplyRange, cost, parent);
+		int max = cost.values().stream().max(Integer::compareTo).orElse(0);
+		HashMap<Axial, Integer> inverted = new HashMap<>();
+		for (var entry : cost.entrySet()) {
+			inverted.put(entry.getKey(), max - entry.getValue());
+		}
+		return new SupplyRangeOverlay(startCoordinate, supplyRange, inverted, parent);
 
 	}
 

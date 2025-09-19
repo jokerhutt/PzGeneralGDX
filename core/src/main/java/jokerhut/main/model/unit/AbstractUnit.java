@@ -5,225 +5,244 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import jokerhut.main.model.hex.Axial;
 import jokerhut.main.constants.GameConstants;
 import jokerhut.main.model.enums.Faction;
 import jokerhut.main.model.enums.UnitType;
+import jokerhut.main.model.hex.Axial;
 import jokerhut.main.renderer.Gfx;
 
 public abstract class AbstractUnit {
 
-    private float health;
-    private float maxHealth;
-    private float defense;
-    private float softAttack;
-    private float hardAttack;
-    private String name;
-    private UnitType unitType;
-    private Axial position;
-    private Integer movementPoints;
-    private Integer startingMovementPoints;
-    private Faction faction;
-    private float fuelCount;
-    private float maxFuelCount;
-    private float fuelConsumption;
+	private float health;
+	private float maxHealth;
+	private float defense;
+	private float softAttack;
+	private float hardAttack;
+	private String name;
+	private UnitType unitType;
+	private Axial position;
+	private Integer movementPoints;
+	private Integer startingMovementPoints;
+	private Faction faction;
+	private float fuelCount;
+	private float maxFuelCount;
+	private float fuelConsumption;
 
-    private float organization;
-    private float maxOrganization;
+	private Integer idleFor = 0;
+	private Integer entrenchment = 0;
 
-    private Vector2 renderPosPx = new Vector2();
+	private float organization;
+	private float maxOrganization;
 
-    private TextureRegion sprite;
+	private Vector2 renderPosPx = new Vector2();
 
-    public void render(SpriteBatch batch) {
-        Vector2 p = getRenderPosPx();
-        batch.draw(sprite,
-                p.x - GameConstants.HEX_WIDTH / 2f,
-                p.y - GameConstants.HEX_HEIGHT / 2f,
-                GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
+	private TextureRegion sprite;
 
-        float x = p.x - GameConstants.HEX_WIDTH / 2f;
-        float y = p.y - GameConstants.HEX_HEIGHT / 2f;
-        if (!isFullHealth()) {
-            drawHpBar(batch, x, y - 3f, GameConstants.HEX_WIDTH, getHealth(), getMaxHealth());
-        }
-    }
+	public void render(SpriteBatch batch) {
+		Vector2 p = getRenderPosPx();
+		batch.draw(sprite,
+				p.x - GameConstants.HEX_WIDTH / 2f,
+				p.y - GameConstants.HEX_HEIGHT / 2f,
+				GameConstants.HEX_WIDTH, GameConstants.HEX_HEIGHT);
 
-    private boolean isFullHealth() {
-        return this.health == maxHealth;
-    }
+		float x = p.x - GameConstants.HEX_WIDTH / 2f;
+		float y = p.y - GameConstants.HEX_HEIGHT / 2f;
+		if (!isFullHealth()) {
+			drawHpBar(batch, x, y - 3f, GameConstants.HEX_WIDTH, getHealth(), getMaxHealth());
+		}
+	}
 
-    private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
-            float hp, float maxHp) {
-        float pad = 30f;
-        float w = spriteW - pad * 2;
-        float h = 10f;
-        float bx = x + pad;
-        float by = y;
+	private boolean isFullHealth() {
+		return this.health == maxHealth;
+	}
 
-        float pct = Math.max(0f, Math.min(1f, hp / (float) maxHp));
+	private void drawHpBar(SpriteBatch batch, float x, float y, float spriteW,
+			float hp, float maxHp) {
+		float pad = 30f;
+		float w = spriteW - pad * 2;
+		float h = 10f;
+		float bx = x + pad;
+		float by = y;
 
-        Color prev = batch.getColor();
+		float pct = Math.max(0f, Math.min(1f, hp / (float) maxHp));
 
-        batch.setColor(0f, 0f, 0f, 0.6f);
-        batch.draw(Gfx.PIXEL, bx, by, w, h);
+		Color prev = batch.getColor();
 
-        float r = (1f - pct);
-        float g = pct;
-        batch.setColor(r, g, 0f, 1f);
-        batch.draw(Gfx.PIXEL, bx + 1, by + 1, (w - 2) * pct, h - 2);
+		batch.setColor(0f, 0f, 0f, 0.6f);
+		batch.draw(Gfx.PIXEL, bx, by, w, h);
 
-        batch.setColor(1f, 1f, 1f, 0.8f);
-        batch.draw(Gfx.PIXEL, bx, by, w, 1);
-        batch.draw(Gfx.PIXEL, bx, by + h - 1, w, 1);
-        batch.draw(Gfx.PIXEL, bx, by, 1, h);
-        batch.draw(Gfx.PIXEL, bx + w - 1, by, 1, h);
+		float r = (1f - pct);
+		float g = pct;
+		batch.setColor(r, g, 0f, 1f);
+		batch.draw(Gfx.PIXEL, bx + 1, by + 1, (w - 2) * pct, h - 2);
 
-        batch.setColor(prev);
-    }
+		batch.setColor(1f, 1f, 1f, 0.8f);
+		batch.draw(Gfx.PIXEL, bx, by, w, 1);
+		batch.draw(Gfx.PIXEL, bx, by + h - 1, w, 1);
+		batch.draw(Gfx.PIXEL, bx, by, 1, h);
+		batch.draw(Gfx.PIXEL, bx + w - 1, by, 1, h);
 
-    public float getHealth() {
-        return health;
-    }
+		batch.setColor(prev);
+	}
 
-    public void setHealth(float health) {
-        this.health = health;
-    }
+	public float getHealth() {
+		return health;
+	}
 
-    public float getDefense() {
-        return defense;
-    }
+	public void setHealth(float health) {
+		this.health = health;
+	}
 
-    public void setDefense(float defense) {
-        this.defense = defense;
-    }
+	public float getDefense() {
+		return defense;
+	}
 
-    public float getSoftAttack() {
-        return softAttack;
-    }
+	public void setDefense(float defense) {
+		this.defense = defense;
+	}
 
-    public void setSoftAttack(float softAttack) {
-        this.softAttack = softAttack;
-    }
+	public float getSoftAttack() {
+		return softAttack;
+	}
 
-    public float getHardAttack() {
-        return hardAttack;
-    }
+	public void setSoftAttack(float softAttack) {
+		this.softAttack = softAttack;
+	}
 
-    public void setHardAttack(float hardAttack) {
-        this.hardAttack = hardAttack;
-    }
+	public float getHardAttack() {
+		return hardAttack;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setHardAttack(float hardAttack) {
+		this.hardAttack = hardAttack;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Axial getPosition() {
-        return position;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPosition(Axial position) {
-        this.position = position;
-    }
+	public Axial getPosition() {
+		return position;
+	}
 
-    public TextureRegion getSprite() {
-        return sprite;
-    }
+	public void setPosition(Axial position) {
+		this.position = position;
+	}
 
-    public void setSprite(TextureRegion sprite) {
-        this.sprite = sprite;
-    }
+	public TextureRegion getSprite() {
+		return sprite;
+	}
 
-    public UnitType getUnitType() {
-        return unitType;
-    }
+	public void setSprite(TextureRegion sprite) {
+		this.sprite = sprite;
+	}
 
-    public void setUnitType(UnitType unitType) {
-        this.unitType = unitType;
-    }
+	public UnitType getUnitType() {
+		return unitType;
+	}
 
-    public Integer getMovementPoints() {
-        return movementPoints;
-    }
+	public void setUnitType(UnitType unitType) {
+		this.unitType = unitType;
+	}
 
-    public void setMovementPoints(Integer movementPoints) {
-        this.movementPoints = movementPoints;
-    }
+	public Integer getMovementPoints() {
+		return movementPoints;
+	}
 
-    public Integer getStartingMovementPoints() {
-        return startingMovementPoints;
-    }
+	public void setMovementPoints(Integer movementPoints) {
+		this.movementPoints = movementPoints;
+	}
 
-    public void setStartingMovementPoints(Integer startingMovementPoints) {
-        this.startingMovementPoints = startingMovementPoints;
-    }
+	public Integer getStartingMovementPoints() {
+		return startingMovementPoints;
+	}
 
-    public Faction getFaction() {
-        return faction;
-    }
+	public void setStartingMovementPoints(Integer startingMovementPoints) {
+		this.startingMovementPoints = startingMovementPoints;
+	}
 
-    public void setFaction(Faction faction) {
-        this.faction = faction;
-    }
+	public Faction getFaction() {
+		return faction;
+	}
 
-    public float getFuelCount() {
-        return fuelCount;
-    }
+	public void setFaction(Faction faction) {
+		this.faction = faction;
+	}
 
-    public void setFuelCount(float fuelCount) {
-        this.fuelCount = fuelCount;
-    }
+	public float getFuelCount() {
+		return fuelCount;
+	}
 
-    public float getMaxHealth() {
-        return maxHealth;
-    }
+	public void setFuelCount(float fuelCount) {
+		this.fuelCount = fuelCount;
+	}
 
-    public void setMaxHealth(float maxHealth) {
-        this.maxHealth = maxHealth;
-    }
+	public float getMaxHealth() {
+		return maxHealth;
+	}
 
-    public Vector2 getRenderPosPx() {
-        return renderPosPx;
-    }
+	public void setMaxHealth(float maxHealth) {
+		this.maxHealth = maxHealth;
+	}
 
-    public void setRenderPosPx(Vector2 renderPosPx) {
-        this.renderPosPx = renderPosPx;
-    }
+	public Vector2 getRenderPosPx() {
+		return renderPosPx;
+	}
 
-    public float getMaxFuelCount() {
-        return maxFuelCount;
-    }
+	public void setRenderPosPx(Vector2 renderPosPx) {
+		this.renderPosPx = renderPosPx;
+	}
 
-    public void setMaxFuelCount(float maxFuelCount) {
-        this.maxFuelCount = maxFuelCount;
-    }
+	public float getMaxFuelCount() {
+		return maxFuelCount;
+	}
 
-    public float getOrganization() {
-        return organization;
-    }
+	public void setMaxFuelCount(float maxFuelCount) {
+		this.maxFuelCount = maxFuelCount;
+	}
 
-    public void setOrganization(float organization) {
-        this.organization = organization;
-    }
+	public float getOrganization() {
+		return organization;
+	}
 
-    public float getMaxOrganization() {
-        return maxOrganization;
-    }
+	public void setOrganization(float organization) {
+		this.organization = organization;
+	}
 
-    public void setMaxOrganization(float maxOrganization) {
-        this.maxOrganization = maxOrganization;
-    }
+	public float getMaxOrganization() {
+		return maxOrganization;
+	}
 
-    public float getFuelConsumption() {
-        return fuelConsumption;
-    }
+	public void setMaxOrganization(float maxOrganization) {
+		this.maxOrganization = maxOrganization;
+	}
 
-    public void setFuelConsumption(float fuelConsumption) {
-        this.fuelConsumption = fuelConsumption;
-    }
+	public float getFuelConsumption() {
+		return fuelConsumption;
+	}
+
+	public void setFuelConsumption(float fuelConsumption) {
+		this.fuelConsumption = fuelConsumption;
+	}
+
+	public Integer getIdleFor() {
+		return idleFor;
+	}
+
+	public void setIdleFor(Integer idleFor) {
+		this.idleFor = idleFor;
+	}
+
+	public Integer getEntrenchment() {
+		return entrenchment;
+	}
+
+	public void setEntrenchment(Integer entrenchment) {
+		this.entrenchment = entrenchment;
+	}
 
 }

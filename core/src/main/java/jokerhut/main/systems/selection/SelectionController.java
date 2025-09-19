@@ -126,6 +126,8 @@ public class SelectionController implements SelectionListener, MovementListener,
 	@Override
 	public void onMotionFinished(AbstractUnit unit) {
 
+		unit.setIdleFor(0);
+
 		System.out.println("Points after attack are now: " + unit.getMovementPoints());
 		if (this.current.unit() == unit) {
 			this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
