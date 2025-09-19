@@ -96,17 +96,18 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 		if (clickEvent.unit() != null) {
 
-			boolean isEnemy = turnManagerContext.getCurrentPlayer().getFaction() == clickEvent.unit().getFaction();
+			boolean isOwnUnit = turnManagerContext.getCurrentPlayer().getFaction() == clickEvent.unit().getFaction();
 
-			if (isEnemy) {
+			if (isOwnUnit) {
 				this.movementOverlay = MovementService.compute(clickEvent.axial(),
-						clickEvent.unit().getMovementPoints(),
+						clickEvent.unit().getMovementPoints(), clickEvent.unit().getFuelCount(),
 						gameMapContext, battleFieldContext, playerFaction);
 			} else if (clickEvent != null) {
 				this.movementOverlay = null;
 			}
 
 		}
+
 		if (clickedHexTerrain != null && clickedHexTerrain.isProvidesSupply()) {
 
 			this.supplyRangeOverlay = clickedHexTerrain.getSupplyRangeOverlay();
@@ -129,7 +130,7 @@ public class SelectionController implements SelectionListener, MovementListener,
 		if (this.current.unit() == unit) {
 			this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
 			this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-					current.unit().getMovementPoints(),
+					current.unit().getMovementPoints(), current.unit().getFuelCount(),
 					gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
 
 			TerrainProfile terrainProfile = gameMapContext.get(current.unit().getPosition()).getTerrainProfile();
@@ -187,7 +188,7 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 		System.out.println("ATTACK TIMER FINISHED");
 		AttackResult result = battleFieldContext.attackUnit(unit, attackToPerform.newIntendedPosition(),
-				attackToPerform.mpAfter());
+				attackToPerform.mpAfter(), attackToPerform.fuelAfter());
 
 		System.out.println("ATTACK FINISHED");
 
@@ -197,7 +198,7 @@ public class SelectionController implements SelectionListener, MovementListener,
 				this.current = new Selection(unit.getPosition(),
 						gameMapContext.get(unit.getPosition()), current.unit());
 				this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-						current.unit().getMovementPoints() + 1,
+						current.unit().getMovementPoints() + 1, current.unit().getFuelCount(),
 						gameMapContext, battleFieldContext, turnManagerContext.getCurrentPlayer().getFaction());
 
 				System.out
@@ -211,7 +212,8 @@ public class SelectionController implements SelectionListener, MovementListener,
 			default -> {
 				if (this.current.unit() == unit) {
 					this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-							current.unit().getMovementPoints(), gameMapContext, battleFieldContext,
+							current.unit().getMovementPoints(), current.unit().getFuelCount(), gameMapContext,
+							battleFieldContext,
 							turnManagerContext.getCurrentPlayer().getFaction());
 				}
 			}
@@ -239,17 +241,23 @@ public class SelectionController implements SelectionListener, MovementListener,
 			Hex newIntendedHex) {
 		Integer currentMovementPoints = current.unit().getMovementPoints();
 		Integer costForMovementAndAttack = attackable.get(newIntendedPosition);
-		if (costForMovementAndAttack == null) {
+
+		Float currentFuelCount = current.unit().getFuelCount();
+		Float fuelCostForMovement = current.unit().getFuelConsumption();
+		Float newFuelCount = currentFuelCount - fuelCostForMovement;
+
+		if (costForMovementAndAttack == null || newFuelCount == null) {
 			return;
 		}
 
 		Integer newPointsAfterAttack = currentMovementPoints - costForMovementAndAttack;
 
-		if (newPointsAfterAttack >= 0) {
+		if (newPointsAfterAttack >= 0 && newFuelCount >= 0) {
 
 			if (HexUtils.areNeighbors(current.unit().getPosition(), newIntendedPosition)
 					&& !combatSystem.isUnitAttacking(current.unit())) {
-				PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack);
+				PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack,
+						newFuelCount);
 				pendingAttacks.put(current.unit(), attackToPerform);
 				prepareAtttack(current.unit(), attackToPerform);
 				this.movementOverlay = null;
@@ -267,12 +275,14 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 				if (!movementSystem.isUnitMoving(current.unit()) && !combatSystem.isUnitAttacking(current.unit())) {
 
-					pendingAttacks.put(current.unit(), new PendingAttack(newIntendedPosition, newPointsAfterAttack));
+					pendingAttacks.put(current.unit(),
+							new PendingAttack(newIntendedPosition, newPointsAfterAttack, newFuelCount));
 
 					soundManager.playMovement(current.unit().getUnitType());
 
 					if (!pathToNewPosition.isEmpty()) {
-						PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack);
+						PendingAttack attackToPerform = new PendingAttack(newIntendedPosition, newPointsAfterAttack,
+								newFuelCount);
 						movementSystem.move(current.unit(), pathToNewPosition);
 						this.movementOverlay = null;
 						this.supplyRangeOverlay = null;
@@ -289,7 +299,12 @@ public class SelectionController implements SelectionListener, MovementListener,
 		Integer currentMovementPoints = current.unit().getMovementPoints();
 		Integer costForMovement = reachableHexes.get(newIntendedPosition);
 
-		if (costForMovement == null) {
+		Float currentFuelCount = current.unit().getFuelCount();
+		Float fuelCostForMovement = current.unit().getFuelConsumption();
+
+		Float newFuelCount = currentFuelCount - fuelCostForMovement;
+
+		if (costForMovement == null || newFuelCount == null) {
 			return;
 		}
 
@@ -303,6 +318,7 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 			if (!pathToNewPosition.isEmpty()) {
 				current.unit().setMovementPoints(newPoints);
+				current.unit().setFuelCount(newFuelCount);
 				movementSystem.move(current.unit(), pathToNewPosition);
 				this.movementOverlay = null;
 				this.supplyRangeOverlay = null;

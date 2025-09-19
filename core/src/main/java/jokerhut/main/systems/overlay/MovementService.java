@@ -72,12 +72,15 @@ public class MovementService {
 
 	}
 
-	public static MovementOverlay compute(Axial startCoordinate, int movementPointsLeft, HashMap<Axial, Hex> hexMap,
+	public static MovementOverlay compute(Axial startCoordinate, int movementPointsLeft, float fuelPointsLeft,
+			HashMap<Axial, Hex> hexMap,
 			BattleField battleField, Faction playerFaction) {
 
 		HashMap<Axial, Integer> cost = new HashMap<>();
 		HashMap<Axial, Axial> parent = new HashMap<>();
 		HashMap<Axial, Integer> attackable = new HashMap<>();
+
+		int budget = Math.min(movementPointsLeft, (int) Math.floor(fuelPointsLeft));
 
 		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(node -> node.cost));
 
@@ -104,7 +107,7 @@ public class MovementService {
 					} else {
 
 						int attackCost = currentNode.cost + hexMap.get(neighborDirection).getMoveCost() + 1;
-						if (attackCost <= movementPointsLeft) {
+						if (attackCost <= budget) {
 							System.out.println("CurrentNode Cost: " + currentNode.cost() + "Next hex cost: "
 									+ hexMap.get(neighborDirection).getMoveCost() + " 1");
 							attackable.merge(neighborDirection, attackCost, Math::min);
@@ -116,7 +119,7 @@ public class MovementService {
 
 				int neighborToEnterCost = hexMap.get(neighborDirection).getMoveCost();
 				int newCost = currentNode.cost() + neighborToEnterCost;
-				if (newCost > movementPointsLeft)
+				if (newCost > budget)
 					continue;
 
 				Integer bestPath = cost.get(neighborDirection);
@@ -130,7 +133,7 @@ public class MovementService {
 			}
 		}
 
-		return new MovementOverlay(startCoordinate, movementPointsLeft, cost, attackable, parent);
+		return new MovementOverlay(startCoordinate, budget, cost, attackable, parent);
 	}
 
 }
