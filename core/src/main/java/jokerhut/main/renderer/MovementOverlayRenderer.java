@@ -9,29 +9,29 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-import jokerhut.main.DTs.Axial;
-import jokerhut.main.DTs.Hex;
-import jokerhut.main.DTs.Selection;
+import jokerhut.main.model.hex.Axial;
+import jokerhut.main.model.hex.Hex;
+import jokerhut.main.model.selection.Selection;
 import jokerhut.main.constants.GameConstants;
-import jokerhut.main.screen.BattleField;
+import jokerhut.main.systems.battlefield.BattleField;
 import jokerhut.main.selection.MovementOverlay;
-import jokerhut.main.selection.MovementSystem;
-import jokerhut.main.selection.SelectionState;
+import jokerhut.main.systems.movement.MovementSystem;
+import jokerhut.main.systems.selection.SelectionController;
 import jokerhut.main.utils.HexUtils;
 
 public class MovementOverlayRenderer implements Renderer {
 
     private final ShapeRenderer shapeRenderer;
-    private final SelectionState selectionState;
+    private final SelectionController selectionController;
     private final HashMap<Axial, Hex> hexMap;
     private final MovementSystem movementSystem;
     private final BattleField battleField;
 
-    public MovementOverlayRenderer(ShapeRenderer shapeRenderer, SelectionState selectionState,
+    public MovementOverlayRenderer(ShapeRenderer shapeRenderer, SelectionController selectionController,
             HashMap<Axial, Hex> hexMap, BattleField battleField, MovementSystem movementSystem) {
 
         this.shapeRenderer = shapeRenderer;
-        this.selectionState = selectionState;
+        this.selectionController = selectionController;
         this.hexMap = hexMap;
         this.battleField = battleField;
         this.movementSystem = movementSystem;
@@ -40,7 +40,7 @@ public class MovementOverlayRenderer implements Renderer {
 
     public void render() {
 
-        Selection currentSelection = selectionState.getCurrentSelection();
+        Selection currentSelection = selectionController.getCurrentSelection();
 
         if (currentSelection == null)
             return;
@@ -60,7 +60,7 @@ public class MovementOverlayRenderer implements Renderer {
             HexUtils.fillHex(shapeRenderer, currentPosition, GameConstants.HEX_SIZE, GameConstants.HEX_Y_SCALE);
         }
 
-        MovementOverlay movementOverlay = selectionState.getMovementOverlay();
+        MovementOverlay movementOverlay = selectionController.getMovementOverlay();
 
         if (movementOverlay != null && currentSelection.unit() != null) {
 

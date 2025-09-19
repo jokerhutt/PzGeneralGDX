@@ -5,10 +5,10 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-import jokerhut.main.DTs.Axial;
-import jokerhut.main.DTs.Hex;
+import jokerhut.main.model.hex.Axial;
+import jokerhut.main.model.hex.Hex;
 import jokerhut.main.constants.GameConstants;
-import jokerhut.main.screen.BattleField;
+import jokerhut.main.systems.battlefield.BattleField;
 
 public class HexUtils {
 

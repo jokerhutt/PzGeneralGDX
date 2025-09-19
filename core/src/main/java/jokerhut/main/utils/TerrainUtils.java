@@ -9,10 +9,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.utils.IntMap;
 
-import jokerhut.main.DTs.Axial;
-import jokerhut.main.DTs.Hex;
-import jokerhut.main.DTs.TerrainProps;
-import jokerhut.main.terrain.TerrainProfile;
+import jokerhut.main.model.hex.Axial;
+import jokerhut.main.model.hex.Hex;
+import jokerhut.main.model.geo.TerrainProps;
+import jokerhut.main.model.geo.TerrainProfile;
 
 public class TerrainUtils {
 

@@ -9,12 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 
-import jokerhut.main.DTs.Axial;
-import jokerhut.main.DTs.Hex;
-import jokerhut.main.screen.BattleField;
-import jokerhut.main.screen.PlayerState;
-import jokerhut.main.selection.MovementSystem;
-import jokerhut.main.selection.SelectionState;
+import jokerhut.main.model.hex.Axial;
+import jokerhut.main.model.hex.Hex;
+import jokerhut.main.systems.battlefield.BattleField;
+import jokerhut.main.model.player.Player;
+import jokerhut.main.systems.movement.MovementSystem;
+import jokerhut.main.systems.selection.SelectionController;
 
 public class GameRenderer implements Renderer {
     private final OrthographicCamera camera;
@@ -27,15 +27,15 @@ public class GameRenderer implements Renderer {
     private final MovementSystem movementSystem;
 
     public GameRenderer(HexagonalTiledMapRenderer hexmapRenderer, OrthographicCamera camera,
-            ShapeRenderer shapeRenderer, SpriteBatch batch,
-            HashMap<Axial, Hex> hexMap, BattleField battleField, SelectionState selectionState, PlayerState axisPlayer,
-            PlayerState alliedPlayer, MovementSystem movementSystem) {
+                        ShapeRenderer shapeRenderer, SpriteBatch batch,
+                        HashMap<Axial, Hex> hexMap, BattleField battleField, SelectionController selectionController, Player axisPlayer,
+                        Player alliedPlayer, MovementSystem movementSystem) {
         this.camera = camera;
         this.shapeRenderer = shapeRenderer;
         this.batch = batch;
         this.hexmapRenderer = hexmapRenderer;
 
-        this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionState, hexMap, battleField,
+        this.movementOverlayRenderer = new MovementOverlayRenderer(shapeRenderer, selectionController, hexMap, battleField,
                 movementSystem);
         this.outlineRenderer = new OutlineRenderer(shapeRenderer, hexMap);
         this.unitRenderer = new UnitRenderer(batch, axisPlayer, alliedPlayer);

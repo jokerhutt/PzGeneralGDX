@@ -2,16 +2,16 @@ package jokerhut.main.renderer;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import jokerhut.main.entities.AbstractUnit;
-import jokerhut.main.screen.PlayerState;
+import jokerhut.main.model.unit.AbstractUnit;
+import jokerhut.main.model.player.Player;
 
 public class UnitRenderer implements Renderer {
 
-    private final PlayerState axisPlayer;
-    private final PlayerState alliedPlayer;
+    private final Player axisPlayer;
+    private final Player alliedPlayer;
     private final SpriteBatch batch;
 
-    public UnitRenderer(SpriteBatch batch, PlayerState axisPlayer, PlayerState alliedPlayer) {
+    public UnitRenderer(SpriteBatch batch, Player axisPlayer, Player alliedPlayer) {
         this.batch = batch;
         this.axisPlayer = axisPlayer;
         this.alliedPlayer = alliedPlayer;

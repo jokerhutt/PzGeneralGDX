@@ -2,7 +2,7 @@ package jokerhut.main.selection;
 
 import java.util.HashMap;
 
-import jokerhut.main.DTs.Axial;
+import jokerhut.main.model.hex.Axial;
 
 public record MovementOverlay(
         // Starting Hex

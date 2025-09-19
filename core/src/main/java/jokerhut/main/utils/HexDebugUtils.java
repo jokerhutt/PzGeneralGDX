@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-import jokerhut.main.DTs.Axial;
-import jokerhut.main.DTs.Hex;
+import jokerhut.main.model.hex.Axial;
+import jokerhut.main.model.hex.Hex;
 import jokerhut.main.constants.GameConstants;
-import jokerhut.main.enums.HexDebugType;
+import jokerhut.main.model.enums.HexDebugType;
 
 public class HexDebugUtils {
 
