@@ -132,16 +132,22 @@ public class SelectionController implements SelectionListener, MovementListener,
 		if (this.current.unit() == unit) {
 			this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
 		}
-		this.movementOverlay = MovementService.compute(current.unit().getPosition(),
-				current.unit().getMovementPoints(), current.unit().getFuelCount(),
-				gameMapContext, battleFieldContext, current.unit().getFaction());
 
-		TerrainProfile terrainProfile = gameMapContext.get(current.unit().getPosition()).getTerrainProfile();
+		else if (this.current.unit() != null) {
+			this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+					current.unit().getMovementPoints(), current.unit().getFuelCount(),
+					gameMapContext, battleFieldContext, current.unit().getFaction());
 
-		if (terrainProfile != null && terrainProfile.isProvidesSupply()) {
-			this.supplyRangeOverlay = terrainProfile.getSupplyRangeOverlay();
+			TerrainProfile terrainProfile = gameMapContext.get(current.unit().getPosition()).getTerrainProfile();
+
+			if (terrainProfile != null && terrainProfile.isProvidesSupply()) {
+				this.supplyRangeOverlay = terrainProfile.getSupplyRangeOverlay();
+			} else {
+				this.supplyRangeOverlay = null;
+			}
 		} else {
 			this.supplyRangeOverlay = null;
+			this.movementOverlay = null;
 		}
 
 		if (pendingAttacks.containsKey(unit)) {

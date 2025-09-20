@@ -137,8 +137,8 @@ public class BattleField {
 				axisPlayer.getUnits().remove(attackerUnit);
 			} else {
 				alliedPlayer.getUnits().remove(attackerUnit);
-				occupiedHexes.remove(attackerUnit.getPosition());
 			}
+			occupiedHexes.remove(attackerUnit.getPosition());
 			return AttackResult.FULLDEFEAT;
 		} else {
 
