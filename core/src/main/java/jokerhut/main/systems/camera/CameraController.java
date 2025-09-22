@@ -30,6 +30,9 @@ public class CameraController {
 	private int sidebarWidth;
 	private int mapWidth;
 
+	private static final float MIN_ZOOM = 0.2f;
+	private static final float MAX_ZOOM = 0.9f;
+
 	public CameraController(TiledMap map) {
 
 		this.map = map;
@@ -67,13 +70,15 @@ public class CameraController {
 	}
 
 	public void zoomBy(float delta) {
-		camera.zoom = MathUtils.clamp(camera.zoom + delta, 0.5f, 3f);
+		float newZoom = camera.zoom + delta;
+		System.out.println("Scroll delta: " + delta + ", NewZoom: " + newZoom);
+		camera.zoom = MathUtils.clamp(newZoom, MIN_ZOOM, MAX_ZOOM);
 		camera.update();
 	}
 
 	public void setupCamera() {
 		camera.position.set(worldW / 2f, worldH / 2f, 0f);
-		camera.zoom = 0.8f;
+		camera.zoom = MathUtils.clamp(0.8f, MIN_ZOOM, MAX_ZOOM);
 		camera.update();
 
 	}

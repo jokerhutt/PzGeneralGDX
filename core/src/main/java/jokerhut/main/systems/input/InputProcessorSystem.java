@@ -70,7 +70,8 @@ public class InputProcessorSystem extends InputAdapter {
 
 	@Override
 	public boolean scrolled(float amountX, float amountY) {
-		cameraController.zoomBy(amountY * 0.1f);
+		System.out.println(amountY);
+		cameraController.zoomBy(amountY * 0.02f);
 		return true;
 	}
 
