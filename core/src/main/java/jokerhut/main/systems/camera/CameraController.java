@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -36,9 +36,9 @@ public class CameraController {
 		setupWorldSizes(map);
 
 		this.camera = new OrthographicCamera();
-		this.worldViewport = new FitViewport(worldW, worldH, this.camera);
-
 		setupCamera();
+
+		this.worldViewport = new FitViewport(worldW, worldH, this.camera);
 		setupViewport();
 	}
 
@@ -63,15 +63,17 @@ public class CameraController {
 	}
 
 	public void setupViewport() {
-		worldViewport = new FitViewport(worldW, worldH, camera);
 		worldViewport.apply();
 	}
 
+	public void zoomBy(float delta) {
+		camera.zoom = MathUtils.clamp(camera.zoom + delta, 0.5f, 3f);
+		camera.update();
+	}
+
 	public void setupCamera() {
-		camera = new OrthographicCamera();
 		camera.position.set(worldW / 2f, worldH / 2f, 0f);
 		camera.zoom = 0.8f;
-
 		camera.update();
 
 	}
@@ -112,27 +114,6 @@ public class CameraController {
 		uiVp.setScreenBounds(mapWidth, 0, sidebarWidth, height);
 		uiVp.update(sidebarWidth, height, true);
 		sidebarStage.layoutSidebar();
-	}
-
-	public void boundary(float startX, float startY, float width, float height) {
-		Vector3 position = camera.position;
-
-		if (position.x < startX) {
-			position.x = startX;
-		}
-		if (position.y < startY) {
-			position.y = startY;
-		}
-		if (position.x > startX + width) {
-			position.x = startX + width;
-		}
-		if (position.y > startY + height) {
-			position.y = startY + height;
-		}
-
-		camera.position.set(position);
-		camera.update();
-
 	}
 
 	public Viewport getWorldViewport() {

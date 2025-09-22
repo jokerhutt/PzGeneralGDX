@@ -125,7 +125,7 @@ public class MainGame extends ApplicationAdapter {
 		broadcaster.subscribe(selectionController);
 
 		sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionController);
-		inputProcessorSystem = new InputProcessorSystem(cameraController.getCamera(),
+		inputProcessorSystem = new InputProcessorSystem(cameraController,
 				cameraController.getWorldViewport(), hexMap, battleField,
 				broadcaster,
 				sidebarStage);

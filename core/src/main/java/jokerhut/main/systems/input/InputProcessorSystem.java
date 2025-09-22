@@ -3,7 +3,6 @@ package jokerhut.main.systems.input;
 import java.util.HashMap;
 
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -15,24 +14,25 @@ import jokerhut.main.model.hex.Hex;
 import jokerhut.main.model.selection.ClickEvent;
 import jokerhut.main.model.unit.AbstractUnit;
 import jokerhut.main.systems.battlefield.BattleField;
+import jokerhut.main.systems.camera.CameraController;
 import jokerhut.main.systems.selection.SelectionBroadcaster;
 import jokerhut.main.utils.HexUtils;
 
 public class InputProcessorSystem extends InputAdapter {
 
-	private final OrthographicCamera camera;
+	private final CameraController cameraController;
 	private final HashMap<Axial, Hex> hexes;
 	private final BattleField battlefield;
 	private final SelectionBroadcaster broadcaster;
 	private final SidebarStage sidebarUi;
 	private final Viewport worldVp;
 
-	public InputProcessorSystem(OrthographicCamera cam, Viewport worldVp,
+	public InputProcessorSystem(CameraController cameraController, Viewport worldVp,
 			HashMap<Axial, Hex> hexes,
 			BattleField battlefield,
 			SelectionBroadcaster broadcaster, SidebarStage sidebarUi) {
-		this.camera = cam;
 		this.hexes = hexes;
+		this.cameraController = cameraController;
 		this.worldVp = worldVp;
 		this.battlefield = battlefield;
 		this.broadcaster = broadcaster;
@@ -65,6 +65,12 @@ public class InputProcessorSystem extends InputAdapter {
 		AbstractUnit unitInstance = battlefield.unitAt(axialCoordinates);
 		broadcaster.broadcastEvent(new ClickEvent(selectionType, axialCoordinates, hexInstance, unitInstance));
 
+		return true;
+	}
+
+	@Override
+	public boolean scrolled(float amountX, float amountY) {
+		cameraController.zoomBy(amountY * 0.1f);
 		return true;
 	}
 
