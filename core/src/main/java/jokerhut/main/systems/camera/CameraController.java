@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -111,6 +112,27 @@ public class CameraController {
 		uiVp.setScreenBounds(mapWidth, 0, sidebarWidth, height);
 		uiVp.update(sidebarWidth, height, true);
 		sidebarStage.layoutSidebar();
+	}
+
+	public void boundary(float startX, float startY, float width, float height) {
+		Vector3 position = camera.position;
+
+		if (position.x < startX) {
+			position.x = startX;
+		}
+		if (position.y < startY) {
+			position.y = startY;
+		}
+		if (position.x > startX + width) {
+			position.x = startX + width;
+		}
+		if (position.y > startY + height) {
+			position.y = startY + height;
+		}
+
+		camera.position.set(position);
+		camera.update();
+
 	}
 
 	public Viewport getWorldViewport() {
