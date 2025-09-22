@@ -3,6 +3,7 @@ package jokerhut.main.UI.sidebar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import jokerhut.main.model.hex.Hex;
@@ -35,7 +37,7 @@ public class SidebarStage extends Stage {
 
 		sidebar = new Table();
 		bgTex = new Texture(Gdx.files.internal("ui/pzUiBorder.png"));
-		// sidebar.setBackground(new TextureRegionDrawable(new TextureRegion(bgTex)));
+		sidebar.setBackground(new TextureRegionDrawable(new TextureRegion(bgTex)));
 		sidebar.setTouchable(Touchable.enabled);
 		sidebar.defaults().expandX().fillX().pad(10);
 		addActor(sidebar);

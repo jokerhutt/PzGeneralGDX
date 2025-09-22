@@ -34,6 +34,7 @@ import jokerhut.main.systems.combat.CombatSystem;
 import jokerhut.main.systems.effect.EffectSystem;
 import jokerhut.main.systems.input.InputProcessorSystem;
 import jokerhut.main.systems.movement.MovementSystem;
+import jokerhut.main.systems.selection.DragEventBroadcaster;
 import jokerhut.main.systems.selection.SelectionBroadcaster;
 import jokerhut.main.systems.selection.SelectionController;
 import jokerhut.main.systems.turn.TurnManager;
@@ -58,7 +59,8 @@ public class MainGame extends ApplicationAdapter {
 
 	// ----- GAME LOGIC ----- //
 	private BattleField battleField;
-	private final SelectionBroadcaster broadcaster = new SelectionBroadcaster();
+	private final SelectionBroadcaster selectionBroadcaster = new SelectionBroadcaster();
+	private final DragEventBroadcaster dragEventBroadcaster = new DragEventBroadcaster();
 	private InputProcessorSystem inputProcessorSystem;
 	private SelectionController selectionController;
 
@@ -94,7 +96,7 @@ public class MainGame extends ApplicationAdapter {
 		hexmapRenderer = new HexagonalTiledMapRenderer(map, 1f);
 		shapeRenderer = new ShapeRenderer();
 
-		this.cameraController = new CameraController(map);
+		this.cameraController = new CameraController(map, dragEventBroadcaster);
 
 		this.axisPlayer = new Player(Faction.GERMAN, 500);
 		this.alliedPlayer = new Player(Faction.BRITISH, 500);
@@ -122,12 +124,12 @@ public class MainGame extends ApplicationAdapter {
 
 		selectionController = new SelectionController(hexMap, battleField, turnManager, soundManager, movementSystem,
 				effectSystem, combatSystem);
-		broadcaster.subscribe(selectionController);
+		selectionBroadcaster.subscribe(selectionController);
 
 		sidebarStage = new SidebarStage(new ScreenViewport(), batch, turnManager, selectionController);
 		inputProcessorSystem = new InputProcessorSystem(cameraController,
 				cameraController.getWorldViewport(), hexMap, battleField,
-				broadcaster,
+				selectionBroadcaster, dragEventBroadcaster,
 				sidebarStage);
 
 		gameRenderer = new GameRenderer(hexmapRenderer, cameraController.getCamera(), shapeRenderer, batch, hexMap,
@@ -156,8 +158,8 @@ public class MainGame extends ApplicationAdapter {
 		combatSystem.updateAttackTimer(dt);
 		effectSystem.update(dt);
 
-		// map area (left)
 		cameraController.applyWorldViewport();
+		cameraController.update(dt);
 
 		gameRenderer.render();
 
@@ -264,8 +266,8 @@ public class MainGame extends ApplicationAdapter {
 		this.battleField = battleField;
 	}
 
-	public SelectionBroadcaster getBroadcaster() {
-		return broadcaster;
+	public SelectionBroadcaster getSelectionBroadcaster() {
+		return selectionBroadcaster;
 	}
 
 	public InputProcessorSystem getInputProcessorSystem() {

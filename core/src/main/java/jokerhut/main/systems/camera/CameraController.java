@@ -9,12 +9,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import jokerhut.main.UI.sidebar.SidebarStage;
+import jokerhut.main.systems.selection.DragEventBroadcaster;
 
 public class CameraController {
 
 	private Viewport worldViewport;
 	private OrthographicCamera camera;
 	private TiledMap map;
+	private CameraPanSystem panSystem;
 
 	private int cols;
 	private int tileW;
@@ -31,18 +33,26 @@ public class CameraController {
 	private int mapWidth;
 
 	private static final float MIN_ZOOM = 0.2f;
-	private static final float MAX_ZOOM = 0.9f;
+	private static final float MAX_ZOOM = 0.85f;
+	private static final float CLAMP_PADDING = -40f;
+	private static final float ZOOM_RESP = 12f;
+	private float targetZoom;
 
-	public CameraController(TiledMap map) {
+	public CameraController(TiledMap map, DragEventBroadcaster dragEventBroadCaster) {
 
 		this.map = map;
 		setupWorldSizes(map);
 
 		this.camera = new OrthographicCamera();
 		setupCamera();
+		targetZoom = camera.zoom;
 
 		this.worldViewport = new FitViewport(worldW, worldH, this.camera);
 		setupViewport();
+
+		this.panSystem = new CameraPanSystem(this);
+		dragEventBroadCaster.subscribe(panSystem);
+
 	}
 
 	public void setupWorldSizes(TiledMap map) {
@@ -71,9 +81,29 @@ public class CameraController {
 
 	public void zoomBy(float delta) {
 		float newZoom = camera.zoom + delta;
-		System.out.println("Scroll delta: " + delta + ", NewZoom: " + newZoom);
 		camera.zoom = MathUtils.clamp(newZoom, MIN_ZOOM, MAX_ZOOM);
+		clampCameraForZoom();
 		camera.update();
+	}
+
+	public void update(float dt) {
+		updateZoom(dt);
+		panSystem.updatePan(dt);
+	}
+
+	public void clampCamera() {
+		float halfW = camera.viewportWidth * camera.zoom / 2f;
+		float halfH = camera.viewportHeight * camera.zoom / 2f;
+
+		camera.position.x = MathUtils.clamp(
+				camera.position.x,
+				halfW - CLAMP_PADDING,
+				worldW - halfW + CLAMP_PADDING);
+
+		camera.position.y = MathUtils.clamp(
+				camera.position.y,
+				halfH - CLAMP_PADDING,
+				worldH - halfH + CLAMP_PADDING);
 	}
 
 	public void setupCamera() {
@@ -103,6 +133,41 @@ public class CameraController {
 		resizeWorld(width, height);
 		resizeUI(sidebarStage, width, height);
 
+	}
+
+	public void onScroll(float amountY) {
+		targetZoom = MathUtils.clamp(targetZoom + amountY * 0.02f, MIN_ZOOM, MAX_ZOOM); // sensitivity here
+	}
+
+	public void updateZoom(float dt) {
+		float z = camera.zoom;
+		float alpha = 1f - (float) Math.exp(-ZOOM_RESP * dt);
+		camera.zoom = MathUtils.lerp(z, targetZoom, alpha);
+		clampCameraForZoom();
+		camera.update();
+	}
+
+	private void clampCameraForZoom() {
+		float halfW = camera.viewportWidth * camera.zoom / 2f;
+		float halfH = camera.viewportHeight * camera.zoom / 2f;
+
+		if (halfW >= worldW * 0.5f) {
+			camera.position.x = worldW * 0.5f;
+		} else {
+			camera.position.x = MathUtils.clamp(
+					camera.position.x,
+					halfW - CLAMP_PADDING,
+					worldW - halfW + CLAMP_PADDING);
+		}
+
+		if (halfH >= worldH * 0.5f) {
+			camera.position.y = worldH * 0.5f;
+		} else {
+			camera.position.y = MathUtils.clamp(
+					camera.position.y,
+					halfH - CLAMP_PADDING,
+					worldH - halfH + CLAMP_PADDING);
+		}
 	}
 
 	public void resizeWorld(int width, int height) {
