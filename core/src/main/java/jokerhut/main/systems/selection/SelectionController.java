@@ -14,6 +14,7 @@ import jokerhut.main.listeners.SelectionListener;
 import jokerhut.main.listeners.TurnListener;
 import jokerhut.main.model.combat.PendingAttack;
 import jokerhut.main.model.enums.AttackResult;
+import jokerhut.main.model.enums.Faction;
 import jokerhut.main.model.enums.SelectionType;
 import jokerhut.main.model.geo.TerrainProfile;
 import jokerhut.main.model.hex.Axial;
@@ -75,6 +76,10 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 			handleLeftClick(clickEvent);
 
+			this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
+
+			soundManager.leftClickSound.play();
+
 		} else if (this.current != null && this.movementOverlay != null
 				&& clickEvent.selectionType() == SelectionType.MOUSEACTION) {
 
@@ -84,36 +89,33 @@ public class SelectionController implements SelectionListener, MovementListener,
 
 	}
 
-	private void recomputeMovementOverlay() {
-		if (this.current != null && this.current.unit() != null) {
-			boolean isOwnUnit = turnManagerContext.getCurrentPlayer().getFaction() == current.unit().getFaction();
+	private void handleLeftClick(ClickEvent clickEvent) {
+
+		Faction playerFaction = turnManagerContext.getCurrentPlayer().getFaction();
+		TerrainProfile clickedHexTerrain = gameMapContext.get(clickEvent.axial()).getTerrainProfile();
+
+		if (clickEvent.unit() != null) {
+
+			boolean isOwnUnit = turnManagerContext.getCurrentPlayer().getFaction() == clickEvent.unit().getFaction();
+
 			if (isOwnUnit) {
-				this.movementOverlay = MovementService.compute(current.axial(),
-						current.unit().getMovementPoints(), current.unit().getFuelCount(),
-						gameMapContext, battleFieldContext, current.unit().getFaction());
-			} else {
+				this.movementOverlay = MovementService.compute(clickEvent.axial(),
+						clickEvent.unit().getMovementPoints(), clickEvent.unit().getFuelCount(),
+						gameMapContext, battleFieldContext, playerFaction);
+			} else if (clickEvent != null) {
 				this.movementOverlay = null;
 			}
-		}
-	}
 
-	private void recomputeSupplyOverlay() {
-		if (this.current == null)
-			return;
-		TerrainProfile clickedHexTerrain = gameMapContext.get(current.axial()).getTerrainProfile();
+		}
+
 		if (clickedHexTerrain != null && clickedHexTerrain.isProvidesSupply()) {
+
 			this.supplyRangeOverlay = clickedHexTerrain.getSupplyRangeOverlay();
+
 		} else {
 			this.supplyRangeOverlay = null;
 		}
 
-	}
-
-	private void handleLeftClick(ClickEvent clickEvent) {
-		soundManager.leftClickSound.play();
-		this.current = new Selection(clickEvent.axial(), clickEvent.hex(), clickEvent.unit());
-		recomputeMovementOverlay();
-		recomputeSupplyOverlay();
 	}
 
 	@Override
@@ -131,8 +133,22 @@ public class SelectionController implements SelectionListener, MovementListener,
 			this.current = new Selection(unit.getPosition(), gameMapContext.get(unit.getPosition()), unit);
 		}
 
-		recomputeMovementOverlay();
-		recomputeSupplyOverlay();
+		else if (this.current.unit() != null) {
+			this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+					current.unit().getMovementPoints(), current.unit().getFuelCount(),
+					gameMapContext, battleFieldContext, current.unit().getFaction());
+
+			TerrainProfile terrainProfile = gameMapContext.get(current.unit().getPosition()).getTerrainProfile();
+
+			if (terrainProfile != null && terrainProfile.isProvidesSupply()) {
+				this.supplyRangeOverlay = terrainProfile.getSupplyRangeOverlay();
+			} else {
+				this.supplyRangeOverlay = null;
+			}
+		} else {
+			this.supplyRangeOverlay = null;
+			this.movementOverlay = null;
+		}
 
 		if (pendingAttacks.containsKey(unit)) {
 			PendingAttack attackToPerform = pendingAttacks.get(unit);
@@ -191,11 +207,12 @@ public class SelectionController implements SelectionListener, MovementListener,
 					this.current = new Selection(unit.getPosition(),
 							gameMapContext.get(unit.getPosition()), current.unit());
 				}
-
 				MovementOverlay movementOverlayForUnit = MovementService.compute(unit.getPosition(),
 						unit.getMovementPoints() + 1, unit.getFuelCount(),
 						gameMapContext, battleFieldContext, unit.getFaction());
 
+				System.out
+						.println("Constructing new path to occupy enemy hex, points are: " + unit.getMovementPoints());
 				List<Axial> pathToNewPosition = reconstructPath(movementOverlayForUnit.parent(),
 						movementOverlayForUnit.start(),
 						attackToPerform.newIntendedPosition());
@@ -207,7 +224,10 @@ public class SelectionController implements SelectionListener, MovementListener,
 			}
 			default -> {
 				if (this.current.unit() == unit) {
-					recomputeMovementOverlay();
+					this.movementOverlay = MovementService.compute(current.unit().getPosition(),
+							current.unit().getMovementPoints(), current.unit().getFuelCount(), gameMapContext,
+							battleFieldContext,
+							turnManagerContext.getCurrentPlayer().getFaction());
 				}
 			}
 		}

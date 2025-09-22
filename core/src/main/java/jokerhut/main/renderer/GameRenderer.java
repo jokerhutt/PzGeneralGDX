@@ -3,6 +3,7 @@ package jokerhut.main.renderer;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -49,6 +50,12 @@ public class GameRenderer implements Renderer {
 
 		hexmapRenderer.setView(camera);
 		hexmapRenderer.render();
+
+		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(Color.RED);
+		shapeRenderer.circle(camera.position.x, camera.position.y, 5f);
+		shapeRenderer.end();
 
 		// movement overlay
 		Gdx.gl.glEnable(GL20.GL_BLEND);
